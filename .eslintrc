@@ -11,15 +11,9 @@
   "rules": {
     "comma-spacing": "error",
     "comma-style": "error",
-    "dot-location": [
-      "error",
-      "property"
-    ],
+    "dot-location": ["error", "property"],
     "handle-callback-err": "off",
-    "indent": [
-      "error",
-      2
-    ],
+    "indent": ["error", 2],
     "max-nested-callbacks": [
       "error",
       {
@@ -35,10 +29,7 @@
     "no-console": [
       "error",
       {
-        "allow": [
-          "warn",
-          "error"
-        ]
+        "allow": ["warn", "error"]
       }
     ],
     // "no-empty-function": "warn",
@@ -55,27 +46,15 @@
     "no-shadow": [
       "error",
       {
-        "allow": [
-          "err",
-          "resolve",
-          "reject"
-        ]
+        "allow": ["err", "resolve", "reject"]
       }
     ],
-    "no-trailing-spaces": [
-      "error"
-    ],
+    "no-trailing-spaces": ["error"],
     "no-useless-catch": "off",
     "no-var": "error",
-    "object-curly-spacing": [
-      "error",
-      "always"
-    ],
+    "object-curly-spacing": ["error", "always"],
     "prefer-const": "error",
-    "quotes": [
-      "error",
-      "single"
-    ],
+    "quotes": ["error", "single"],
     "space-before-blocks": "error",
     "space-in-parens": "error",
     "space-infix-ops": "error",
