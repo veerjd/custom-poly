@@ -1,0 +1,29 @@
+Users table:
+    id
+    user_id (Discord user id)
+    name (server nickname)
+    game_name (in-game name)
+    games (total games played)
+    wins
+
+Games table:
+    id (game id)
+    structure
+    status (open | ongoing | complete | deleted)
+    name
+    host (User id)
+    teams (number of)
+    players (number of)
+
+Teams table:
+    id
+    game_id
+    name (either a single capital letter or the player's name)
+    player_id1
+    player_id2
+    player_id3
+    player_id4
+
+In an FFA match, each player is on their own team.
+
+example query: const returned = await db.query('SELECT selectors FROM table WHERE condition = $1', [input]);

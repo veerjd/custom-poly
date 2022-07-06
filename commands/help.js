@@ -1,6 +1,6 @@
 module.exports = {
   name: 'help',
-  description: 'Get help running my commands.',
+  description: 'Get help running my commands. May specify a command to get information on.',
   aliases: ['h'],
   shortUsage(prefix) {
     return `\`${prefix}h\``;

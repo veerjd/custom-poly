@@ -8,7 +8,6 @@ const bot = new Client({
 const fs = require('fs');
 const prefix = process.env.PREFIX;
 // const help = require('./commands/help')
-const db = require('./db');
 
 const logChannel =
   'https://discord.com/channels/606284456474443786/684944690893946972';
@@ -102,7 +101,7 @@ bot.on('messageCreate', async (message) => {
 
     const msg = buildEmbed(replyObj);
 
-    const replyMessage = await message.channel.send({ embeds: [msg] });
+    await message.channel.send({ embeds: [msg] });
 
     return;
   } catch (error) {
@@ -116,7 +115,7 @@ bot.on('messageCreate', async (message) => {
   }
 });
 
-/* to delete a bot message with the wastebasket reaction */
+/* to delete a bot message with the wastebasket reaction
 bot.on('messageReactionAdd', async (reaction, user) => {
   try {
     if (reaction.message.partial) await reaction.message.fetch();
@@ -151,7 +150,7 @@ bot.on('messageReactionAdd', async (reaction, user) => {
     // const pathArray = error.path.split('/')
     logChannel.send(`${error.message}\n${error.stack}`);
   }
-});
+}); */
 
 // --------------------------------------
 //
