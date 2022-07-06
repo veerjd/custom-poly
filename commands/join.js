@@ -1,6 +1,6 @@
 module.exports = {
   name: 'join',
-  description: 'Join a game.',
+  description: 'Join an open game.',
   aliases: ['j'],
   shortUsage(prefix) {
     return `\`${prefix}j\``;

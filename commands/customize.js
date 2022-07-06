@@ -1,12 +1,12 @@
 module.exports = {
-  name: 'games',
-  description: 'See available games.',
-  aliases: ['gs', 'opengames'],
+  name: 'customize',
+  description: 'Open a game with a new ruleset.',
+  aliases: [],
   shortUsage(prefix) {
-    return `\`${prefix}gs\``;
+    return `\`${prefix}___\``;
   },
   longUsage(prefix) {
-    return `\`${prefix}games\``;
+    return `\`${prefix}___\``;
   },
   category: 'Main',
   // category: 'Paid',
