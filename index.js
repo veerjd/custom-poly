@@ -1,17 +1,26 @@
-require('dotenv').config()
-const { Client, Collection } = require('discord.js')
-const bot = new Client({ partials: ['MESSAGE', 'CHANNEL', 'REACTION'], intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'] })
-const fs = require('fs')
-const prefix = process.env.PREFIX
-const help = require('./commands/help')
-const db = require('../db')
+/* eslint-disable no-console */
+require('dotenv').config();
+const { Client, Collection, buildEmbed } = require('discord.js');
+const bot = new Client({
+  partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
+  intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'],
+});
+const fs = require('fs');
+const prefix = process.env.PREFIX;
+// const help = require('./commands/help')
+const db = require('./db');
 
-bot.commands = new Collection()
-const commandFiles = fs.readdirSync('./bot/commands').filter(file => file.endsWith('.js'))
+const logChannel =
+  'https://discord.com/channels/606284456474443786/684944690893946972';
+
+bot.commands = new Collection();
+const commandFiles = fs
+  .readdirSync('./bot/commands')
+  .filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {
-  const command = require(`./commands/${file}`)
-  bot.commands.set(command.name, command)
+  const command = require(`./commands/${file}`);
+  bot.commands.set(command.name, command);
 }
 
 // --------------------------------------
@@ -20,10 +29,8 @@ for (const file of commandFiles) {
 //
 // --------------------------------------
 bot.once('ready', () => {
-  bot.user.setActivity('$help', { type: 'PLAYING' })
-
-  // eslint-disable-next-line no-console
-  console.log(`Logged in as ${bot.user.username}`)
+  bot.user.setActivity('!help', { type: 'PLAYING' });
+  console.log(`Logged in as ${bot.user.username}`);
 });
 
 // --------------------------------------
@@ -31,110 +38,120 @@ bot.once('ready', () => {
 //      EVENT ON MESSAGE
 //
 // --------------------------------------
-bot.on('messageCreate', async message => {
+bot.on('messageCreate', async (message) => {
   try {
-    if (message.author.bot || !message.content.startsWith(prefix) || message.content === prefix)
-      return
+    if (
+      message.author.bot ||
+      !message.content.startsWith(prefix) ||
+      message.content === prefix
+    )
+      return;
 
     // If it's a DM
     if (message.channel.type === 'dm') {
-      const logMsg = []
-      logMsg.push(`Content: ${message.content}`)
-      logMsg.push(`DM from ${message.author}(${message.author.username})`)
-      logMsg.push('<@217385992837922819>')
+      const logMsg = [];
+      logMsg.push(`Content: ${message.content}`);
+      logMsg.push(`DM from ${message.author}(${message.author.username})`);
+      logMsg.push('<@217385992837922819> <@776656382010458112>');
 
-      message.channel.send('I do not support DM commands.\nYou can go into any server I\'m in and do `/help c` for help with my most common command.\nFor more meta discussions, you can find the PolyCalculator server with `/links` in any of those servers!')
-        .catch(console.error)
-      return feedbackChannel.send(logMsg).catch(console.error)
+      message.channel
+        .send('I do not support DM commands.')
+        .catch(console.error);
+      return logChannel.send(logMsg).catch(console.error);
     }
 
-    const textStr = message.cleanContent.slice(prefix.length)
+    const textStr = message.cleanContent.slice(prefix.length);
     const commandName = textStr.split(/ +/).shift().toLowerCase();
-    const argsStr = textStr.slice(commandName.length + 1)
+    // const argsStr = textStr.slice(commandName.length + 1)
 
     // Map all the commands
-    const command = bot.commands.get(commandName) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
+    const command =
+      bot.commands.get(commandName) ||
+      bot.commands.find(
+        (cmd) => cmd.aliases && cmd.aliases.includes(commandName)
+      );
 
     // Return if the command doesn't exist
-    if (!command)
-      return
-
-    const generalDelete = 5000
+    if (!command) return;
 
     // Check if the user has the permissions necessary to execute the command
-    if (!(command.permsAllowed !== 'VIEW_CHANNEL' || command.permsAllowed.some(x => message.member.permissions.has(x)) || command.usersAllowed.some(x => x === message.author.id)))
-      return message.channel.send('Only an admin can use this command, sorry!')
+    if (
+      !(
+        command.permsAllowed.some((x) => message.member.permissions.has(x)) ||
+        command.usersAllowed.some((x) => x === message.author.id)
+      )
+    )
+      return message.channel.send('Only an admin can use this command, sorry!');
 
     // EXECUTE COMMAND
-    const replyObj = await command.execute(message)
+    const replyObj = await command.execute(message);
 
-    logUse(message, logChannel)
+    // logUse(message, logChannel); supposed to log the command?
 
-    replyObj.content.forEach(async other => {
-      const warnings = await message.channel.send(other[0])
+    replyObj.content.forEach(async (other) => {
+      const warnings = await message.channel.send(other[0]);
+      if (replyObj.deleteContent) setTimeout(() => warnings.delete(), 15000);
+    });
 
-      if (replyObj.deleteContent)
-        setTimeout(() => warnings.delete(), 15000)
-    })
+    if (
+      replyObj.discord.description === undefined &&
+      replyObj.discord.title === undefined &&
+      replyObj.discord.fields.length === 0
+    )
+      return;
 
-    if (replyObj.discord.description === undefined && replyObj.discord.title === undefined && replyObj.discord.fields.length === 0)
-      return
+    const msg = buildEmbed(replyObj);
 
-    const msg = buildEmbed(replyObj)
+    const replyMessage = await message.channel.send({ embeds: [msg] });
 
-    const replyMessage = await message.channel.send({ embeds: [msg] })
-
-    return
+    return;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error)
+    console.log(error);
     if (error.stack)
-      errorChannel.send(`**${message.cleanContent}** by ${message.author} (@${message.author.tag})\n${error}\n${message.url}`)
+      logChannel.send(
+        `**${message.cleanContent}** by ${message.author} (@${message.author.tag})\n${error}\n${message.url}`
+      );
 
-    return message.channel.send(`${error}`)
-      .then().catch(console.error)
+    return message.channel.send(`${error}`).then().catch(console.error);
   }
-})
+});
 
+/* to delete a bot message with the wastebasket reaction */
 bot.on('messageReactionAdd', async (reaction, user) => {
   try {
     if (reaction.message.partial) await reaction.message.fetch();
 
     if (reaction.partial) await reaction.fetch();
 
-    if (user.bot)
-      return
+    if (user.bot) return;
 
-    if (reaction.message.author.id !== bot.user.id)
-      return
+    if (reaction.message.author.id !== bot.user.id) return;
 
-    if (reaction.emoji.name !== '🗑️')
-      return
+    if (reaction.emoji.name !== '🗑️') return;
 
-    const sql = 'SELECT author_id, message_id, is_slash FROM stats WHERE url = $1'
-    const values = [reaction.message.url]
-    const returned = await db.query(sql, values)
-    let isUserRemoved = false
+    const sql =
+      'SELECT author_id, message_id, is_slash FROM stats WHERE url = $1';
+    const values = [reaction.message.url];
+    const returned = await db.query(sql, values);
+    let isUserRemoved = false;
 
-    if (!returned.rows[0])
-      return
+    if (!returned.rows[0]) return;
 
-    const { author_id: userId, message_id: initialMessageId } = returned.rows[0]
+    const userId = returned.rows[0].author_id;
 
-    isUserRemoved = true && userId === user.id
+    isUserRemoved = userId === user.id;
 
-    const memberRemoving = await reaction.message.guild.members.fetch(user.id)
-    const canDelete = memberRemoving.permissions.has('MANAGE_MESSAGES')
+    const memberRemoving = await reaction.message.guild.members.fetch(user.id);
+    const canDelete = memberRemoving.permissions.has('MANAGE_MESSAGES');
 
     if (isUserRemoved || user.id === '217385992837922819' || canDelete)
-      await reaction.message.delete()
+      await reaction.message.delete();
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.log(error)
+    console.log(error);
     // const pathArray = error.path.split('/')
-    errorChannel.send(`${error.message}\n${error.stack}`)
+    logChannel.send(`${error.message}\n${error.stack}`);
   }
-})
+});
 
 // --------------------------------------
 //
@@ -143,8 +160,7 @@ bot.on('messageReactionAdd', async (reaction, user) => {
 // --------------------------------------
 
 process.on('unhandledRejection', (code) => {
-  // eslint-disable-next-line no-console
-  console.log(`unhandledRejection: ${code.stack}`)
-})
+  console.log(`unhandledRejection: ${code.stack}`);
+});
 
 bot.login(process.env.TOKEN);
