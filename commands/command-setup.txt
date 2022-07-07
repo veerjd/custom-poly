@@ -11,7 +11,7 @@ module.exports = {
   category: '',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
-  execute: async message => {
+  execute: async (message, mod) => {
     let returnMsg = '';
     const args = message.split(' ').shift();
     try {

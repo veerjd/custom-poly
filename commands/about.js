@@ -11,7 +11,7 @@ module.exports = {
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
-  execute: async () => {
+  execute: async (message, mod) => {
     return [
       `A bot to track games and wins for CustomPoly. My prefix is ${process.env.prefix}.`,
     ];

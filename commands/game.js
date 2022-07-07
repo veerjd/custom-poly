@@ -14,7 +14,7 @@ module.exports = {
   category: 'Games',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
-  execute: async (message) => {
+  execute: async (message, mod) => {
     let returnMsg = '';
     const args = message.split(' ').shift();
     try {
@@ -29,10 +29,6 @@ module.exports = {
           'SELECT name, player_id1, player_id2, player_id3, player_id4 FROM teams WHERE game_id = $1',
           [game]
         ).rows;
-        const hostName = await db.query(
-          'SELECT name FROM users WHERE id = $1',
-          [gameInfo.host]
-        );
 
         returnMsg += `**__Game ${game}`;
         if (gameInfo.name !== 'unnamed') {
@@ -41,10 +37,10 @@ module.exports = {
         returnMsg += `__**\nGame mode: ${gameInfo.structure} \nThis game `;
         if (gameInfo.status === 'completed' || gameInfo.status === 'deleted') {
           returnMsg.push(
-            `was ${gameInfo.status} and was hosted by ${hostName}.`
+            `was ${gameInfo.status} and was hosted by <@${gameInfo.host}>.`
           );
         } else {
-          returnMsg.push(`is ${gameInfo.status} and hosted by ${hostName}.`);
+          returnMsg.push(`is ${gameInfo.status} and hosted by <@${gameInfo.host}>.`);
         }
 
         if (teams.length === players.length) {
@@ -67,7 +63,7 @@ module.exports = {
                 team.player_id4,
               ]
             ).rows;
-            returnMsg += `\n\n**${team.name}**`;
+            returnMsg += `\n\n**Team ${team.name}**`;
             for (const player of playerNames) {
               returnMsg.push(`\n\t${player.name} - *${player.game_name}*`);
             }
@@ -78,7 +74,7 @@ module.exports = {
           returnMsg = `Game ${game} could not be found.`;
         } else {
           returnMsg =
-            'The `!delete` command takes a game ID as an argument. Type `!help` for more information.';
+            'The `!game` command takes a game ID as an argument. Type `!help` for more information.';
         }
       }
     } catch (error) {

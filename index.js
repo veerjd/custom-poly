@@ -83,7 +83,7 @@ bot.on('messageCreate', async (message) => {
       return message.channel.send('Only an admin can use this command, sorry!');
 
     // EXECUTE COMMAND
-    const replyObj = await command.execute(message);
+    const replyObj = await command.execute(message, message.member.permissions.has('MANAGE_SERVER'));
 
     // logUse(message, logChannel); supposed to log the command?
 
@@ -114,6 +114,11 @@ bot.on('messageCreate', async (message) => {
     return message.channel.send(`${error}`).then().catch(console.error);
   }
 });
+
+module.exports = {
+  // send a DM from the bot
+  sendDm: (userId, message) => bot.users.get(userId).send(message)
+}
 
 /* to delete a bot message with the wastebasket reaction
 bot.on('messageReactionAdd', async (reaction, user) => {

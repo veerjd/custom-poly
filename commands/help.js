@@ -1,6 +1,7 @@
 module.exports = {
   name: 'help',
-  description: 'Get help running my commands. May specify a command to get information on.',
+  description:
+    'Get help running my commands. May specify a command to get information on.',
   aliases: ['h'],
   shortUsage(prefix) {
     return `\`${prefix}h\``;
@@ -11,7 +12,7 @@ module.exports = {
   category: 'Main',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
-  execute: async (message) => {
+  execute: async (message, mod) => {
     let returnMsg = '';
     const args = message.split(' ').shift();
     const { commands } = message.client;

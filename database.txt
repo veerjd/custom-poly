@@ -8,12 +8,12 @@ Users table:
 
 Games table:
     id (game id)
-    structure
+    structure (Werewolf/Werewolves | Zombies | Traitor | Make-Believe)
     status (open | ongoing | complete | deleted)
     name
     host (User id)
     teams (number of)
-    players (number of)
+    players (number per team)
 
 Teams table:
     id
