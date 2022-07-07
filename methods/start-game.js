@@ -34,25 +34,13 @@ module.exports = {
       gameChannel.send(
         `This is the game channel for game ${id}. The game mode is ${structure}. Players: ` +
           players.forEach((playerId) => `<@${playerId}> `) +
-          'Do `!game` to see a list of teams.'
+          '\nDo `!game` to see a list of teams.'
       );
     }
 
     if (gameInfo.teams > 1) {
       for (const team of teams) {
-        const teamIds = [
-          team.player_id1,
-          team.player_id2,
-          team.player_id3,
-          team.player_id4,
-        ];
-        const teamMembers = [];
-        teamIds.forEach((memberId) => {
-          if (memberId) {
-            teamMembers.push(memberId);
-          }
-        });
-
+        const teamMembers = team.player_ids;
         const teamPerms = [];
         teamMembers
           .forEach((playerId) => {
@@ -73,7 +61,7 @@ module.exports = {
         teamChannel.send(
           `This is the team channel for team ${team.name} in game ${id}. The game mode is ${structure}. Team members: ` +
             teamMembers.forEach((playerId) => `<@${playerId}> `) +
-            'Do `!game` to see a full list of players and teams.'
+            '\nDo `!game` to see a full list of players and teams.'
         );
 
         if (gameInfo.structure.includes('Traitor')) {
@@ -125,7 +113,7 @@ module.exports = {
       createChannel(`game-${id}-ww-only`, 'Ongoing Games', wolvesPerms).send(
         `This is the channel for the werewolves in game ${id}. Wolves: ` +
           wolves.forEach((playerId) => `<@${playerId}> `) +
-          'Do `!game` to see a full list of players.'
+          '\nDo `!game` to see a full list of players.'
       );
     } else if (gameInfo.structure.includes('Make-Believe')) {
       const teamA = [0, 0, 0];

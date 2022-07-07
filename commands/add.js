@@ -4,7 +4,7 @@ const startGame = require('../methods/start-game.js');
 module.exports = {
   name: 'add',
   description:
-    'Add a user to an open game. Must specify a game ID and user to add.',
+    'Add a user to an open game. Must specify a game ID and mention user to add.',
   aliases: ['addplayer'],
   shortUsage(prefix) {
     return `\`${prefix}add\``;
@@ -26,9 +26,16 @@ module.exports = {
       ).rows[0];
 
       const userId = args[1].substring(2, 20);
-      const userName = await db.query('SELECT name FROM users WHERE id = $1', [
-        userId,
-      ]).rows[0].name;
+      let userName;
+      try {
+        userName = await db.query('SELECT name FROM users WHERE id = $1', [
+          userId,
+        ]).rows[0].name;
+      } catch {
+        return [
+          'That user was not found in my database. Make sure you ping the user.',
+        ];
+      }
 
       if (message.author.id === gameInfo.host || mod) {
         if (game && gameInfo) {
@@ -45,18 +52,7 @@ module.exports = {
               }
 
               let lastTeam = teams[teams.length - 1];
-              let filledSlots = 0;
-              if (lastTeam.player_id1) {
-                if (!lastTeam.player_id2) {
-                  filledSlots = 1;
-                } else if (!lastTeam.player_id3) {
-                  filledSlots = 2;
-                } else if (!lastTeam.player_id4) {
-                  filledSlots = 3;
-                } else {
-                  filledSlots = 4;
-                }
-              }
+              let filledSlots = lastTeam.player_ids.length;
 
               if (
                 filledSlots >= gameInfo.players &&
@@ -68,46 +64,21 @@ module.exports = {
                     lastTeamName.charCodeAt(0) + 1
                   );
                   lastTeam = await db.query(
-                    'INSERT INTO teams (game_id, name, player_id1) VALUES ($1, $2, $3)',
-                    [game, newTeamName, userId]
+                    'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
+                    [game, newTeamName, [userId]]
                   );
                 } else {
                   lastTeam = await db.query(
-                    'INSERT INTO teams (game_id, name, player_id1) VALUES ($1, $2, $3)',
-                    [game, userName, userId]
+                    'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
+                    [game, userName, [userId]]
                   );
                 }
               } else {
-                switch (filledSlots) {
-                  case 0:
-                    await db.query(
-                      'UPDATE team SET player_id1 = $1 WHERE id = $2',
-                      [userId, lastTeam.id]
-                    );
-                    break;
-                  case 1:
-                    await db.query(
-                      'UPDATE team SET player_id2 = $1 WHERE id = $2',
-                      [userId, lastTeam.id]
-                    );
-                    break;
-                  case 2:
-                    await db.query(
-                      'UPDATE team SET player_id3 = $1 WHERE id = $2',
-                      [userId, lastTeam.id]
-                    );
-                    break;
-                  case 3:
-                    await db.query(
-                      'UPDATE team SET player_id4 = $1 WHERE id = $2',
-                      [userId, lastTeam.id]
-                    );
-                    break;
-                  default:
-                    return [
-                      '<:994382517715083345:> There was an issue adding the player to the game.',
-                    ];
-                }
+                lastTeam.player_ids.push(userId);
+                await db.query(
+                  'UPDATE team SET player_ids = $1 WHERE id = $2',
+                  [lastTeam.player_ids, lastTeam.id]
+                );
               }
 
               returnMsg = `Successfully added ${userName} to game ${game}`;
@@ -117,17 +88,7 @@ module.exports = {
                 returnMsg += '.';
               }
 
-              if (lastTeam.player_id1) {
-                if (!lastTeam.player_id2) {
-                  filledSlots = 1;
-                } else if (!lastTeam.player_id3) {
-                  filledSlots = 2;
-                } else if (!lastTeam.player_id4) {
-                  filledSlots = 3;
-                } else {
-                  filledSlots = 4;
-                }
-              }
+              filledSlots = lastTeam.player_ids.length;
 
               if (
                 teams.length === gameInfo.teams &&
@@ -150,13 +111,13 @@ module.exports = {
             } else {
               if (gameInfo.teams > 1) {
                 await db.query(
-                  'INSERT INTO teams (game_id, name, player_id1) VALUES ($1, `A`, $2)',
-                  [game, userId]
+                  'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, `A`, $2)',
+                  [game, [userId]]
                 );
               } else {
                 await db.query(
                   'INSERT INTO teams (game_id, name, player_id1) VALUES ($1, $2, $3)',
-                  [game, userName, userId]
+                  [game, userName, [userId]]
                 );
               }
             }

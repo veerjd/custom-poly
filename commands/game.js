@@ -26,7 +26,7 @@ module.exports = {
       if (game && gameInfo) {
         const players = await getPlayerIds(game);
         const teams = await db.query(
-          'SELECT name, player_id1, player_id2, player_id3, player_id4 FROM teams WHERE game_id = $1',
+          'SELECT name, player_ids FROM teams WHERE game_id = $1',
           [game]
         ).rows;
 
@@ -56,12 +56,7 @@ module.exports = {
           for (const team of teams) {
             const playerNames = await db.query(
               'SELECT name, game_name FROM users WHERE id = $1 OR id = $2 OR id = $3 OR id = $4',
-              [
-                team.player_id1,
-                team.player_id2,
-                team.player_id3,
-                team.player_id4,
-              ]
+              team.player_ids
             ).rows;
             returnMsg += `\n\n**Team ${team.name}**`;
             for (const player of playerNames) {
