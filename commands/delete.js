@@ -28,25 +28,36 @@ module.exports = {
         const players = await getPlayerIds(game);
         if (players.includes(message.author.id) || mod) {
           switch (gameInfo.status) {
-          case 'open':
-          case 'ongoing':
-            await db.query(
-              'UPDATE games SET status = \'deleted\' WHERE id = $1',
-              [game]
-            );
-            returnMsg = `Game ${game} has been deleted. Notifying players.`;
-            players.forEach((id) => {
-              returnMsg += ` <@${id}>`;
-            });
-            return [].push(returnMsg);
-          case 'completed':
-            return [
-              `Game ${game} has already finished. It cannot be deleted now.`,
-            ];
-          case 'deleted':
-            return [`Game ${game} has already been deleted.`];
-          default:
-            return [`Game ${game} was unable to be deleted.`];
+            case 'open':
+            case 'ongoing':
+              await db.query(
+                'UPDATE games SET status = \'deleted\' WHERE id = $1',
+                [game]
+              );
+              returnMsg = `Game ${game} has been deleted. Notifying players.`;
+              for (const id of players) {
+                returnMsg += ` <@${id}>`;
+                const numberGames = await db.query(
+                  'SELECT games FROM users WHERE id = $1',
+                  [id]
+                ).rows[0].games;
+                await db.query('UPDATE users SET games = $1 WHERE id = $2', [
+                  numberGames - 1,
+                  id,
+                ]);
+              }
+              return [].push(returnMsg);
+
+            case 'completed':
+              return [
+                `Game ${game} has already finished. It cannot be deleted now.`,
+              ];
+
+            case 'deleted':
+              return [`Game ${game} has already been deleted.`];
+
+            default:
+              return [`Game ${game} was unable to be deleted.`];
           }
         } else {
           return ['You cannot delete a game you are not in.'];

@@ -20,7 +20,6 @@ module.exports = {
       throw error;
     }
 
-    const returnArray = [].push(returnMsg);
-    return returnArray;
+    return [].push(returnMsg);
   },
 };

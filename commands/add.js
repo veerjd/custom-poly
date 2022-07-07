@@ -32,7 +32,7 @@ module.exports = {
 
       if (message.author.id === gameInfo.host || mod) {
         if (game && gameInfo) {
-          if (gameInfo.status === 'open') {
+          if (gameInfo.status === 'open' || gameInfo.status === 'ongoing') {
             const teams = await db.query(
               'SELECT * FROM teams WHERE game_id = $1',
               [game]
@@ -79,34 +79,34 @@ module.exports = {
                 }
               } else {
                 switch (filledSlots) {
-                case 0:
-                  await db.query(
-                    'UPDATE team SET player_id1 = $1 WHERE id = $2',
-                    [userId, lastTeam.id]
-                  );
-                  break;
-                case 1:
-                  await db.query(
-                    'UPDATE team SET player_id2 = $1 WHERE id = $2',
-                    [userId, lastTeam.id]
-                  );
-                  break;
-                case 2:
-                  await db.query(
-                    'UPDATE team SET player_id3 = $1 WHERE id = $2',
-                    [userId, lastTeam.id]
-                  );
-                  break;
-                case 3:
-                  await db.query(
-                    'UPDATE team SET player_id4 = $1 WHERE id = $2',
-                    [userId, lastTeam.id]
-                  );
-                  break;
-                default:
-                  return [
-                    '<:994382517715083345:> There was an issue adding the player to the game.',
-                  ];
+                  case 0:
+                    await db.query(
+                      'UPDATE team SET player_id1 = $1 WHERE id = $2',
+                      [userId, lastTeam.id]
+                    );
+                    break;
+                  case 1:
+                    await db.query(
+                      'UPDATE team SET player_id2 = $1 WHERE id = $2',
+                      [userId, lastTeam.id]
+                    );
+                    break;
+                  case 2:
+                    await db.query(
+                      'UPDATE team SET player_id3 = $1 WHERE id = $2',
+                      [userId, lastTeam.id]
+                    );
+                    break;
+                  case 3:
+                    await db.query(
+                      'UPDATE team SET player_id4 = $1 WHERE id = $2',
+                      [userId, lastTeam.id]
+                    );
+                    break;
+                  default:
+                    return [
+                      '<:994382517715083345:> There was an issue adding the player to the game.',
+                    ];
                 }
               }
 
@@ -160,6 +160,15 @@ module.exports = {
                 );
               }
             }
+
+            const numberGames = await db.query(
+              'SELECT games FROM users WHERE id = $1',
+              [userId]
+            ).rows[0].games;
+            await db.query('UPDATE users SET games = $1 WHERE id = $2', [
+              numberGames + 1,
+              userId,
+            ]);
           } else {
             returnMsg = `Game ${game} is not open and players cannot be added to it.`;
           }

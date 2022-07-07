@@ -77,34 +77,34 @@ module.exports = {
               }
             } else {
               switch (filledSlots) {
-              case 0:
-                await db.query(
-                  'UPDATE team SET player_id1 = $1 WHERE id = $2',
-                  [userId, lastTeam.id]
-                );
-                break;
-              case 1:
-                await db.query(
-                  'UPDATE team SET player_id2 = $1 WHERE id = $2',
-                  [userId, lastTeam.id]
-                );
-                break;
-              case 2:
-                await db.query(
-                  'UPDATE team SET player_id3 = $1 WHERE id = $2',
-                  [userId, lastTeam.id]
-                );
-                break;
-              case 3:
-                await db.query(
-                  'UPDATE team SET player_id4 = $1 WHERE id = $2',
-                  [userId, lastTeam.id]
-                );
-                break;
-              default:
-                return [
-                  '<:994382517715083345:> There was an issue joining the game.',
-                ];
+                case 0:
+                  await db.query(
+                    'UPDATE team SET player_id1 = $1 WHERE id = $2',
+                    [userId, lastTeam.id]
+                  );
+                  break;
+                case 1:
+                  await db.query(
+                    'UPDATE team SET player_id2 = $1 WHERE id = $2',
+                    [userId, lastTeam.id]
+                  );
+                  break;
+                case 2:
+                  await db.query(
+                    'UPDATE team SET player_id3 = $1 WHERE id = $2',
+                    [userId, lastTeam.id]
+                  );
+                  break;
+                case 3:
+                  await db.query(
+                    'UPDATE team SET player_id4 = $1 WHERE id = $2',
+                    [userId, lastTeam.id]
+                  );
+                  break;
+                default:
+                  return [
+                    '<:994382517715083345:> There was an issue joining the game.',
+                  ];
               }
             }
 
@@ -137,7 +137,10 @@ module.exports = {
               ).rows[0];
 
               startGame(game, gameInfo2.structure, message.guild.id);
-              await db.query('UPDATE games SET status = `ongoing` WHERE id = $1', [game]);
+              await db.query(
+                'UPDATE games SET status = `ongoing` WHERE id = $1',
+                [game]
+              );
 
               returnMsg += `\nGame ${game} has filled. <@${gameInfo2.host}> can now start the game. `;
               returnMsg += `Do \`!game ${game}\` to see the game details or \`!name ${game}\` to name the game.`;
@@ -155,6 +158,15 @@ module.exports = {
               );
             }
           }
+
+          const numberGames = await db.query(
+            'SELECT games FROM users WHERE id = $1',
+            [userId]
+          ).rows[0].games;
+          await db.query('UPDATE users SET games = $1 WHERE id = $2', [
+            numberGames + 1,
+            userId,
+          ]);
         } else {
           returnMsg = `Game ${game} is not open and cannot be joined.`;
         }

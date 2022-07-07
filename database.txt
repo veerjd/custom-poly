@@ -8,7 +8,7 @@ Users table:
 
 Games table:
     id (game id)
-    structure (Werewolf/Werewolves | Zombies | Traitor | Make-Believe)
+    structure
     status (open | ongoing | complete | deleted)
     name
     host (User id)

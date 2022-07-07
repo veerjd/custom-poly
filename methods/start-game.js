@@ -24,8 +24,9 @@ module.exports = {
         deny: [Permissions.FLAGS.VIEW_CHANNEL],
       });
 
-    if (gameInfo.structure !== 'Traitor') {
-      const gameChannel = createChannel(
+    let gameChannel;
+    if (!gameInfo.structure.includes('Traitor')) {
+      gameChannel = createChannel(
         `game-${id}-${structure}`,
         'Ongoing Games',
         playerPerms
@@ -35,16 +36,6 @@ module.exports = {
           players.forEach((playerId) => `<@${playerId}> `) +
           'Do `!game` to see a list of teams.'
       );
-      if (gameInfo.structure === 'Zombies') {
-        const zombie = players[Math.floor(Math.random() * players.length)];
-        const { zombieName, zombieGameName } = await query(
-          'SELECT name, game_name FROM users WHERE id = $1',
-          [zombie]
-        );
-        gameChannel.send(
-          `${zombieName} (${zombieGameName} in-game) is the zombie to begin this game.`
-        );
-      }
     }
 
     if (gameInfo.teams > 1) {
@@ -85,7 +76,7 @@ module.exports = {
             'Do `!game` to see a full list of players and teams.'
         );
 
-        if (gameInfo.structure === 'Traitor') {
+        if (gameInfo.structure.includes('Traitor')) {
           let traitorId;
           do {
             traitorId = players[Math.floor(Math.random() * players.length)];
@@ -106,10 +97,7 @@ module.exports = {
       }
     }
 
-    if (
-      gameInfo.structure === 'Werewolf' ||
-      gameInfo.structure === 'Werewolves'
-    ) {
+    if (gameInfo.structure.includes('Werewol')) {
       const numWolves = Math.round(players.length / 3);
       const nonWolves = players;
       const wolves = [];
@@ -139,7 +127,7 @@ module.exports = {
           wolves.forEach((playerId) => `<@${playerId}> `) +
           'Do `!game` to see a full list of players.'
       );
-    } else if (gameInfo.structure === 'Make-Believe') {
+    } else if (gameInfo.structure.includes('Make-Believe')) {
       const teamA = [0, 0, 0];
       const teamB = [0, 0, 0];
       const noTeam = players;
@@ -198,6 +186,78 @@ module.exports = {
           teamBNames[1] +
           ', ' +
           teamBNames[2]
+      );
+    } else if (gameInfo.structure.includes('Bang')) {
+      const unassignedPlayers = players;
+      let i = 0;
+      const sayRole = (playerId, role) => {
+        if (role === 'outlaw') {
+          sendDm(
+            playerId,
+            `You are an outlaw in Bang! game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+          );
+        } else {
+          sendDm(
+            playerId,
+            `You are a ${role} in Bang! game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+          );
+        }
+      };
+
+      while (i < players.length) {
+        const playerId =
+          unassignedPlayers[Math.floor(Math.random() * players.length)];
+        let playerName;
+        if (playerId) {
+          if (i === 0) {
+            playerName = await query('SELECT name FROM users WHERE id = $1', [
+              playerId,
+            ]).rows[0].name;
+          }
+          switch (i) {
+            case 0:
+              sayRole(playerId, 'sheriff');
+              gameChannel.send(`The sheriff is ${playerName}.`);
+              break;
+            case 1:
+              sayRole(playerId, 'renegade');
+              break;
+            case 2:
+            case 3:
+            case 5:
+            case 7:
+            case 9:
+              sayRole(playerId, 'outlaw');
+              break;
+            case 4:
+            case 6:
+            case 8:
+            case 10:
+              sayRole(playerId, 'deputy');
+              break;
+            default:
+              i = players.length;
+          }
+          i++;
+        }
+      }
+    } else if (gameInfo.structure.includes('Zombies')) {
+      const zombie = players[Math.floor(Math.random() * players.length)];
+      const { zombieName, zombieGameName } = await query(
+        'SELECT name, game_name FROM users WHERE id = $1',
+        [zombie]
+      );
+      gameChannel.send(
+        `${zombieName} (${zombieGameName} in-game) is the zombie to begin this game. (There is no consequence to pick a different zombie if the other players agree.)`
+      );
+    } else if (gameInfo.structure.includes('Tower')) {
+      const runner = players[Math.floor(Math.random() * players.length)];
+      const { runnerName, runnerGameName } = await query(
+        'SELECT name, game_name FROM users WHERE id = $1',
+        [runner]
+      );
+      gameChannel.send(
+        `${runnerName} (${runnerGameName} in-game) is the runner. (There is no consequence to switch the runner.)`
       );
     }
   },

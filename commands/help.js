@@ -9,7 +9,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}help\``;
   },
-  category: 'Main',
+  category: 'Info',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
@@ -25,18 +25,17 @@ module.exports = {
             (cmnd) => cmnd.aliases && cmnd.aliases.includes(args[0])
           );
         if (cmd) {
-          returnMsg += `**${cmd.name}** \n${cmd.description} \n*Aliases:* `;
+          returnMsg += `**${cmd.name}** \n${cmd.description} \nLong form: ${cmd.longUsage} \nShort form: ${cmd.shortUsage} \n**Aliases:**`;
           for (const alias of cmd.aliases) {
             returnMsg += `${alias}, `;
           }
-          returnMsg.substring(0, returnMsg.length - 2);
-          returnMsg += `\nLong form: ${cmd.longUsage} \nShort form: ${cmd.shortUsage}`;
+          returnMsg = returnMsg.substring(0, returnMsg.length - 2);
         } else {
           returnMsg = `That command was not found. Run \`${process.env.prefix}help\` to view all of my commands.`;
         }
       } else {
         const categoriesMapped = {
-          Main: {},
+          Info: {},
           Games: {},
         };
 
