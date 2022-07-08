@@ -2,7 +2,7 @@ const { query } = require('../db');
 
 module.exports = {
   name: '',
-  description: '',
+  description: 'Update your user registration. May specify your in-game name.',
   aliases: [],
   shortUsage(prefix) {
     return `\`${prefix}___\``;

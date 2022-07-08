@@ -4,7 +4,7 @@ const { startGame, getLastTeam } = require('../methods/');
 module.exports = {
   name: 'add',
   description:
-    'Add a user to an open game. Must specify a game ID and mention user to add.',
+    'Add a user to an open or ongoing game. Must specify a game ID and mention user to add.',
   aliases: ['addplayer'],
   shortUsage(prefix) {
     return `\`${prefix}add\``;
