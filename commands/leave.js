@@ -20,19 +20,19 @@ module.exports = {
     try {
       const userId = message.author.id;
       const game = args[1];
-      const gameInfo = await query(
+      const gameInfo = (await query(
         'SELECT status, teams, players FROM games WHERE id = $1',
         [game]
-      );
+      )).rows[0];
       const players = await getPlayerIds(game);
 
       if (game && gameInfo) {
         if (players.includes(userId)) {
           if (gameInfo.status === 'open') {
-            const teams = await query(
+            const teams = (await query(
               'SELECT id, name, player_ids FROM teams WHERE game_id = $1',
               [game]
-            ).rows;
+            )).rows;
             const lastTeam = getLastTeam(game);
 
             let playerTeam, playerIndex;
@@ -74,10 +74,10 @@ module.exports = {
                 returnMsg = `Successfully removed you from game ${game}. <@${lastPlayer}> has been moved to team ${teams[playerTeam].name}.`;
               }
             } else {
-              const deleteTeams = await query(
+              const deleteTeams = (await query(
                 'SELECT id FROM teams WHERE game_id = $1 AND player_ids = $2',
                 [game, [userId]]
-              ).rows;
+              )).rows;
               if (deleteTeams.length === 1) {
                 await query('DELETE FROM teams WHERE id = $1', [
                   deleteTeams[0].id,
@@ -88,10 +88,10 @@ module.exports = {
               }
             }
 
-            const numberGames = await query(
+            const numberGames = (await query(
               'SELECT games FROM users WHERE id = $1',
               [userId]
-            ).rows[0].games;
+            )).rows[0].games;
             await query('UPDATE users SET games = $1 WHERE id = $2', [
               numberGames - 1,
               userId,

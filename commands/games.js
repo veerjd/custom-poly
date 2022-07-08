@@ -18,10 +18,10 @@ module.exports = {
     const args = message.split(' ');
     try {
       if (['ongoing', 'running', 'inprogress'].includes(args[1])) {
-        const games = await db.query(
+        const games = (await db.query(
           'SELECT id, structure, name, host FROM games WHERE status = `ongoing`',
           []
-        ).rows;
+        )).rows;
 
         returnMsg = '**__Ongoing Games__**';
         for (const game of games) {
@@ -33,10 +33,10 @@ module.exports = {
         }
         returnMsg += '\n\n*Ongoing games cannot be joined.*';
       } else {
-        const games = await db.query(
+        const games = (await db.query(
           'SELECT id, structure, host FROM games WHERE status = `open`',
           []
-        ).rows;
+        )).rows;
 
         returnMsg = '**__Open Games__**';
         for (const game of games) {

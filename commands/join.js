@@ -19,27 +19,27 @@ module.exports = {
     const args = message.split(' ');
     try {
       const game = args[1];
-      const gameInfo = await db.query(
+      const gameInfo = (await db.query(
         'SELECT status, teams, players FROM games WHERE id = $1',
         [game]
-      ).rows[0];
+      )).rows[0];
 
       const userId = message.author.id;
       let userName;
       try {
-        userName = await db.query('SELECT name FROM users WHERE id = $1', [
+        userName = (await db.query('SELECT name FROM users WHERE id = $1', [
           userId,
-        ]).rows[0].name;
+        ])).rows[0].name;
       } catch {
         return ['Please register with me first using `!register`.'];
       }
 
       if (game && gameInfo) {
         if (gameInfo.status === 'open') {
-          const teams = await db.query(
+          const teams = (await db.query(
             'SELECT * FROM teams WHERE game_id = $1',
             [game]
-          ).rows;
+          )).rows;
 
           if (teams) {
             if (gameInfo.teams === 1) {
@@ -90,10 +90,10 @@ module.exports = {
               teams.length === gameInfo.teams &&
               gameInfo.players === filledSlots
             ) {
-              const gameInfo2 = await db.query(
+              const gameInfo2 = (await db.query(
                 'SELECT structure, host FROM games WHERE id = $1',
                 [game]
-              ).rows[0];
+              )).rows[0];
 
               startGame(game, gameInfo2.structure, message.guild.id);
               await db.query(
@@ -105,23 +105,26 @@ module.exports = {
               returnMsg += `Do \`!game ${game}\` to see the game details or \`!name ${game}\` to name the game.`;
             }
           } else {
+            returnMsg = `Joined you to game ${game}`
             if (gameInfo.teams > 1) {
               await db.query(
                 'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, `A`, $2)',
                 [game, [userId]]
               );
+              returnMsg += ' on team A.';
             } else {
               await db.query(
                 'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
                 [game, userName, [userId]]
               );
+              returnMsg += '.';
             }
           }
 
-          const numberGames = await db.query(
+          const numberGames = (await db.query(
             'SELECT games FROM users WHERE id = $1',
             [userId]
-          ).rows[0].games;
+          )).rows[0].games;
           await db.query('UPDATE users SET games = $1 WHERE id = $2', [
             numberGames + 1,
             userId,

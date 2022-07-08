@@ -19,11 +19,10 @@ module.exports = {
     const args = message.split(' ');
     try {
       const game = args[1];
-      const returned = await db.query(
+      const gameInfo = (await db.query(
         'SELECT structure, status FROM games WHERE id = $1',
         [game]
-      );
-      const gameInfo = returned.rows[0];
+      )).rows[0];
       if (game && gameInfo) {
         const players = await getPlayerIds(game);
         if (players.includes(message.author.id) || mod) {
@@ -37,10 +36,10 @@ module.exports = {
               returnMsg = `Game ${game} has been deleted. Notifying players.`;
               for (const id of players) {
                 returnMsg += ` <@${id}>`;
-                const numberGames = await db.query(
+                const numberGames = (await db.query(
                   'SELECT games FROM users WHERE id = $1',
                   [id]
-                ).rows[0].games;
+                )).rows[0].games;
                 await db.query('UPDATE users SET games = $1 WHERE id = $2', [
                   numberGames - 1,
                   id,

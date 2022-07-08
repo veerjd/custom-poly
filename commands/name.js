@@ -20,10 +20,10 @@ module.exports = {
     try {
       const userId = message.author.id;
       const game = args[1];
-      const gameInfo = await query(
+      const gameInfo = (await query(
         'SELECT status, name FROM games WHERE id = $1',
         [game]
-      );
+      )).rows[0];
       const players = await getPlayerIds(game);
 
       const gameName = args.slice(2, args.length).join(' ');

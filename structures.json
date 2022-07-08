@@ -42,7 +42,7 @@
   {
     "mode": "Make-Believe",
     "channel": 849626560625639434,
-    "description": "FFA with specified number of people. One-third of the game are werewolves."
+    "description": "FFA with 7 people. First player is GM, the other six are players. No arguments required."
   },
   {
     "mode": "FFA",

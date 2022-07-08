@@ -19,16 +19,16 @@ module.exports = {
     const args = message.split(' ');
     try {
       const game = args[1];
-      const gameInfo = await db.query(
+      const gameInfo = (await db.query(
         'SELECT structure, status, name, host FROM games WHERE id = $1',
         [game]
-      ).rows[0];
+      )).rows[0];
       if (game && gameInfo) {
         const players = await getPlayerIds(game);
-        const teams = await db.query(
+        const teams = (await db.query(
           'SELECT name, player_ids FROM teams WHERE game_id = $1',
           [game]
-        ).rows;
+        )).rows;
 
         returnMsg += `**__Game ${game}`;
         if (gameInfo.name !== 'unnamed') {
@@ -46,18 +46,18 @@ module.exports = {
         if (teams.length === players.length) {
           returnMsg += '\n';
           for (const id of players) {
-            const playerInfo = await db.query(
+            const playerInfo = (await db.query(
               'SELECT name, game_name FROM users WHERE id = $1',
               [id]
-            ).rows[0];
+            )).rows[0];
             returnMsg += `\n**${playerInfo.name}** - *${playerInfo.gameName}*`;
           }
         } else {
           for (const team of teams) {
-            const playerNames = await db.query(
+            const playerNames = (await db.query(
               'SELECT name, game_name FROM users WHERE id = $1 OR id = $2 OR id = $3 OR id = $4',
               team.player_ids
-            ).rows;
+            )).rows;
             returnMsg += `\n\n**Team ${team.name}**`;
             for (const player of playerNames) {
               returnMsg.push(`\n\t${player.name} - *${player.game_name}*`);
