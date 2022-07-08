@@ -6,10 +6,10 @@ const createChannel = require('./create-channel');
 const { sendDm } = require('../index');
 
 module.exports = {
-  startGame: async (id, structure, guildId) => {
-    const players = getPlayerIds(id);
-    const gameInfo = await query('SELECT * FROM games WHERE id = $1', [id]);
-    const teams = await query('SELECT * FROM teams WHERE game_id = $1', [id])
+  startGame: async (game, structure, guildId) => {
+    const players = getPlayerIds(game);
+    const gameInfo = await query('SELECT * FROM games WHERE id = $1', [game]);
+    const teams = await query('SELECT * FROM teams WHERE game_id = $1', [game])
       .rows;
     const playerPerms = [];
     players
@@ -27,12 +27,12 @@ module.exports = {
     let gameChannel;
     if (!gameInfo.structure.includes('Traitor')) {
       gameChannel = createChannel(
-        `game-${id}-${structure}`,
+        `game-${game}-${structure}`,
         'Ongoing Games',
         playerPerms
       );
       gameChannel.send(
-        `This is the game channel for game ${id}. The game mode is ${structure}. Players: ` +
+        `This is the game channel for game ${game}. The game mode is ${structure}. Players: ` +
           players.forEach((playerId) => `<@${playerId}> `) +
           '\nDo `!game` to see a list of teams.'
       );
@@ -54,12 +54,12 @@ module.exports = {
             deny: [Permissions.FLAGS.VIEW_CHANNEL],
           });
         const teamChannel = createChannel(
-          `game-${id}-side-${team.name}`,
+          `game-${game}-side-${team.name}`,
           'Ongoing Games',
           teamPerms
         );
         teamChannel.send(
-          `This is the team channel for team ${team.name} in game ${id}. The game mode is ${structure}. Team members: ` +
+          `This is the team channel for team ${team.name} in game ${game}. The game mode is ${structure}. Team members: ` +
             teamMembers.forEach((playerId) => `<@${playerId}> `) +
             '\nDo `!game` to see a full list of players and teams.'
         );
@@ -79,7 +79,7 @@ module.exports = {
           );
           sendDm(
             traitorId,
-            `You are the traitor in game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+            `You are the traitor in game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
           );
         }
       }
@@ -110,8 +110,8 @@ module.exports = {
           id: guildId,
           deny: [Permissions.FLAGS.VIEW_CHANNEL],
         });
-      createChannel(`game-${id}-ww-only`, 'Ongoing Games', wolvesPerms).send(
-        `This is the channel for the werewolves in game ${id}. Wolves: ` +
+      createChannel(`game-${game}-ww-only`, 'Ongoing Games', wolvesPerms).send(
+        `This is the channel for the werewolves in game ${game}. Wolves: ` +
           wolves.forEach((playerId) => `<@${playerId}> `) +
           '\nDo `!game` to see a full list of players.'
       );
@@ -154,15 +154,15 @@ module.exports = {
 
       sendDm(
         teamA[0],
-        `You are a team captain in Make-Believe game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+        `You are a team captain in Make-Believe game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
       );
       sendDm(
         teamB[0],
-        `You are a team captain in Make-Believe game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+        `You are a team captain in Make-Believe game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
       );
       sendDm(
         players[6],
-        `The Make-Believe game ${id} on CustomPoly has the following players:\n**Team A:** ` +
+        `The Make-Believe game ${game} on CustomPoly has the following players:\n**Team A:** ` +
           teamANames[0] +
           ', ' +
           teamANames[1] +
@@ -182,12 +182,12 @@ module.exports = {
         if (role === 'outlaw') {
           sendDm(
             playerId,
-            `You are an outlaw in Bang! game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+            `You are an outlaw in Bang! game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
           );
         } else {
           sendDm(
             playerId,
-            `You are a ${role} in Bang! game ${id} on CustomPoly. (This email was sent from a no-reply address.)`
+            `You are a ${role} in Bang! game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
           );
         }
       };

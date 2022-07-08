@@ -1,5 +1,5 @@
 const db = require('../db');
-const startGame = require('../methods/start-game.js');
+const { startGame, getLastTeam } = require('../methods');
 
 module.exports = {
   name: 'join',
@@ -16,9 +16,9 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ').shift();
+    const args = message.split(' ');
     try {
-      const game = args[0];
+      const game = args[1];
       const gameInfo = await db.query(
         'SELECT status, teams, players FROM games WHERE id = $1',
         [game]
@@ -47,7 +47,7 @@ module.exports = {
               gameInfo.players = 1;
             }
 
-            let lastTeam = teams[teams.length - 1];
+            let lastTeam = getLastTeam(game);
             let filledSlots = lastTeam.player_ids.length;
 
             if (

@@ -14,15 +14,15 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ').shift();
+    const args = message.split(' ');
     const { commands } = message.client;
 
     try {
-      if (args[0]) {
+      if (args[1]) {
         const cmd =
-          commands.get(args[0]) ||
+          commands.get(args[1]) ||
           commands.find(
-            (cmnd) => cmnd.aliases && cmnd.aliases.includes(args[0])
+            (cmnd) => cmnd.aliases && cmnd.aliases.includes(args[1])
           );
         if (cmd) {
           returnMsg += `**${cmd.name}** \n${cmd.description} \nLong form: ${cmd.longUsage} \nShort form: ${cmd.shortUsage} \n**Aliases:**`;

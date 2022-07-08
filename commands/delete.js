@@ -16,9 +16,9 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ').shift();
+    const args = message.split(' ');
     try {
-      const game = args[0];
+      const game = args[1];
       const returned = await db.query(
         'SELECT structure, status FROM games WHERE id = $1',
         [game]

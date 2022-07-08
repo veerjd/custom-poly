@@ -15,9 +15,9 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ').shift();
+    const args = message.split(' ');
     try {
-      if (['ongoing', 'running', 'inprogress'].includes(args[0])) {
+      if (['ongoing', 'running', 'inprogress'].includes(args[1])) {
         const games = await db.query(
           'SELECT id, structure, name, host FROM games WHERE status = `ongoing`',
           []
