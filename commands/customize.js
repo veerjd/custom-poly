@@ -1,4 +1,5 @@
 const { query } = require('../db');
+const createChannel = require('../methods/create-channel');
 
 module.exports = {
   name: 'customize',
@@ -23,7 +24,9 @@ module.exports = {
         await query('SELECT id FROM users WHERE id = $1', [userId])
       ).rows.length;
       if (checkUser === 1) {
-        if (message.member.roles.cache.some(role => role.name === 'customizer')) {
+        if (
+          message.member.roles.cache.some((role) => role.name === 'customizer')
+        ) {
           const newMode = args[1].toLowerCase();
           const struc = args[2].toLowerCase();
           let size;
@@ -44,14 +47,15 @@ module.exports = {
                 }
               ) + 1;
 
-            const newModeLetters = newMode.split('');
+            let newModeLetters = newMode.split('');
             let space = true;
-            for(let i = 0; i < newModeLetters.length; i++) {
-              if(newModeLetters[i] === '-' || newModeLetters[i] === '_') {
+            for (let i = 0; i < newModeLetters.length; i++) {
+              if (newModeLetters[i] === '-' || newModeLetters[i] === '_') {
                 newModeLetters[i] = ' ';
                 space = true;
               } else if (space) {
                 newModeLetters[i] = newModeLetters[i].toUpperCase();
+                space = false;
               }
             }
             const newModeName = newModeLetters.join('');
@@ -156,7 +160,13 @@ module.exports = {
                 if (size) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, $4, $5)',
-                    [gameId, newModeName + ' (Teams)', userId, size.substring(0, 1), size.substring(1, 2)]
+                    [
+                      gameId,
+                      newModeName + ' (Teams)',
+                      userId,
+                      size.substring(0, 1),
+                      size.substring(1, 2),
+                    ]
                   );
                 } else {
                   return [
@@ -209,6 +219,18 @@ module.exports = {
               );
               returnMsg += '.';
             }
+
+            newModeLetters = newModeName.toLowerCase().split('');
+            for (let i = 0; i < newModeLetters.length; i++) {
+              if (newModeLetters[i] === ' ') {
+                newModeLetters[i] = '-';
+              } else if (
+                newModeLetters[i].toUpperCase() === newModeLetters[i]
+              ) {
+                newModeLetters[i] = '';
+              }
+            }
+            createChannel(newModeLetters.join(''), 'Customizers Corner', []);
           } else {
             returnMsg =
               'The `!customize` command takes a name for the new game mode and a game type as arguments. Do `!structures` to see a list of game types.';

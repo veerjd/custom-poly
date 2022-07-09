@@ -8,21 +8,22 @@ const { sendDm } = require('../index');
 module.exports = {
   startGame: async (game, structure, guildId) => {
     const players = getPlayerIds(game);
-    const gameInfo = await query('SELECT * FROM games WHERE id = $1', [game]);
-    const teams = await query('SELECT * FROM teams WHERE game_id = $1', [game])
-      .rows;
+    const gameInfo = (await query('SELECT * FROM games WHERE id = $1', [game]))
+      .rows[0];
+    const teams = (
+      await query('SELECT * FROM teams WHERE game_id = $1', [game])
+    ).rows;
     const playerPerms = [];
-    players
-      .forEach((playerId) => {
-        playerPerms.push({
-          id: playerId,
-          allow: [Permissions.FLAGS.VIEW_CHANNEL],
-        });
-      })
-      .push({
-        id: guildId,
-        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+    players.forEach((playerId) => {
+      playerPerms.push({
+        id: playerId,
+        allow: [Permissions.FLAGS.VIEW_CHANNEL],
       });
+    });
+    playerPerms.push({
+      id: guildId,
+      deny: [Permissions.FLAGS.VIEW_CHANNEL],
+    });
 
     let gameChannel;
     if (!gameInfo.structure.includes('Traitor')) {
@@ -42,17 +43,16 @@ module.exports = {
       for (const team of teams) {
         const teamMembers = team.player_ids;
         const teamPerms = [];
-        teamMembers
-          .forEach((playerId) => {
-            teamPerms.push({
-              id: playerId,
-              allow: [Permissions.FLAGS.VIEW_CHANNEL],
-            });
-          })
-          .push({
-            id: guildId,
-            deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        teamMembers.forEach((playerId) => {
+          teamPerms.push({
+            id: playerId,
+            allow: [Permissions.FLAGS.VIEW_CHANNEL],
           });
+        });
+        teamPerms.push({
+          id: guildId,
+          deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        });
         const teamChannel = createChannel(
           `game-${game}-side-${team.name}`,
           'Ongoing Games',
@@ -68,11 +68,12 @@ module.exports = {
           let traitorId;
           do {
             traitorId = players[Math.floor(Math.random() * players.length)];
-          } while (!teamMembers.includes(traitorId));
-          const { traitorName, traitorGameName } = await query(
-            'SELECT name, game_name FROM users WHERE id = $1',
-            [traitorId]
-          );
+          } while (teamMembers.includes(traitorId));
+          const { traitorName, traitorGameName } = (
+            await query('SELECT name, game_name FROM users WHERE id = $1', [
+              traitorId,
+            ])
+          ).rows[0];
 
           teamChannel.send(
             `The traitor on the other team is ${traitorName}, whose in-game name is ${traitorGameName}.`
@@ -99,17 +100,16 @@ module.exports = {
       }
 
       const wolvesPerms = [];
-      wolves
-        .forEach((playerId) => {
-          wolvesPerms.push({
-            id: playerId,
-            allow: [Permissions.FLAGS.VIEW_CHANNEL],
-          });
-        })
-        .push({
-          id: guildId,
-          deny: [Permissions.FLAGS.VIEW_CHANNEL],
+      wolves.forEach((playerId) => {
+        wolvesPerms.push({
+          id: playerId,
+          allow: [Permissions.FLAGS.VIEW_CHANNEL],
         });
+      });
+      wolvesPerms.push({
+        id: guildId,
+        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+      });
       createChannel(`game-${game}-ww-only`, 'Ongoing Games', wolvesPerms).send(
         `This is the channel for the werewolves in game ${game}. Wolves: ` +
           wolves.forEach((playerId) => `<@${playerId}> `) +
@@ -119,9 +119,9 @@ module.exports = {
       const teamA = [0, 0, 0];
       const teamB = [0, 0, 0];
       const noTeam = players;
-      noTeam.pop();
+      noTeam.shift();
 
-      while (noTeam !== []) {
+      while (noTeam.length > 0) {
         const player = noTeam[0];
         let playerIndex = Math.floor(Math.random() * 6);
         let playerArray = 0;
@@ -151,30 +151,23 @@ module.exports = {
           query('SELECT name FROM users WHERE id = $1', [playerId])
         )
       );
-
-      sendDm(
-        teamA[0],
-        `You are a team captain in Make-Believe game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
-      );
-      sendDm(
-        teamB[0],
-        `You are a team captain in Make-Believe game ${game} on CustomPoly. (This email was sent from a no-reply address.)`
-      );
-      sendDm(
-        players[6],
+      const dmMessage =
         `The Make-Believe game ${game} on CustomPoly has the following players:\n**Team A:** ` +
-          teamANames[0] +
-          ', ' +
-          teamANames[1] +
-          ', ' +
-          teamANames[2] +
-          '\n**Team B:** ' +
-          teamBNames[0] +
-          ', ' +
-          teamBNames[1] +
-          ', ' +
-          teamBNames[2]
-      );
+        teamANames[0] +
+        ', ' +
+        teamANames[1] +
+        ', ' +
+        teamANames[2] +
+        '\n**Team B:** ' +
+        teamBNames[0] +
+        ', ' +
+        teamBNames[1] +
+        ', ' +
+        teamBNames[2];
+
+      sendDm(teamA[0], dmMessage);
+      sendDm(teamB[0], dmMessage);
+      sendDm(players[0], dmMessage);
     } else if (gameInfo.structure.includes('Bang')) {
       const unassignedPlayers = players;
       let i = 0;
@@ -192,58 +185,60 @@ module.exports = {
         }
       };
 
-      while (i < players.length) {
-        const playerId =
-          unassignedPlayers[Math.floor(Math.random() * players.length)];
+      while (unassignedPlayers.length > 0) {
+        const playerIndex = Math.floor(
+          Math.random() * unassignedPlayers.length
+        );
+        const playerId = unassignedPlayers[playerIndex];
         let playerName;
-        if (playerId) {
-          if (i === 0) {
-            playerName = await query('SELECT name FROM users WHERE id = $1', [
-              playerId,
-            ]).rows[0].name;
-          }
-          switch (i) {
-            case 0:
-              sayRole(playerId, 'sheriff');
-              gameChannel.send(`The sheriff is ${playerName}.`);
-              break;
-            case 1:
-              sayRole(playerId, 'renegade');
-              break;
-            case 2:
-            case 3:
-            case 5:
-            case 7:
-            case 9:
-              sayRole(playerId, 'outlaw');
-              break;
-            case 4:
-            case 6:
-            case 8:
-            case 10:
-              sayRole(playerId, 'deputy');
-              break;
-            default:
-              i = players.length;
-          }
-          i++;
+
+        if (i === 0) {
+          playerName = (
+            await query('SELECT name FROM users WHERE id = $1', [playerId])
+          ).rows[0].name;
         }
+
+        switch (i) {
+          case 0:
+            sayRole(playerId, 'sheriff');
+            gameChannel.send(`The sheriff is ${playerName}.`);
+            break;
+          case 1:
+            sayRole(playerId, 'renegade');
+            break;
+          case 2:
+          case 3:
+          case 5:
+          case 7:
+          case 9:
+            sayRole(playerId, 'outlaw');
+            break;
+          case 4:
+          case 6:
+          case 8:
+          case 10:
+            sayRole(playerId, 'deputy');
+            break;
+          default:
+            i = players.length;
+        }
+
+        unassignedPlayers.splice(playerIndex, 1);
+        i++;
       }
     } else if (gameInfo.structure.includes('Zombies')) {
       const zombie = players[Math.floor(Math.random() * players.length)];
-      const { zombieName, zombieGameName } = await query(
-        'SELECT name, game_name FROM users WHERE id = $1',
-        [zombie]
-      );
+      const { zombieName, zombieGameName } = (
+        await query('SELECT name, game_name FROM users WHERE id = $1', [zombie])
+      ).rows[0];
       gameChannel.send(
         `${zombieName} (${zombieGameName} in-game) is the zombie to begin this game. (There is no consequence to pick a different zombie if the other players agree.)`
       );
     } else if (gameInfo.structure.includes('Tower')) {
       const runner = players[Math.floor(Math.random() * players.length)];
-      const { runnerName, runnerGameName } = await query(
-        'SELECT name, game_name FROM users WHERE id = $1',
-        [runner]
-      );
+      const { runnerName, runnerGameName } = (
+        await query('SELECT name, game_name FROM users WHERE id = $1', [runner])
+      ).rows[0];
       gameChannel.send(
         `${runnerName} (${runnerGameName} in-game) is the runner. (There is no consequence to switch the runner.)`
       );

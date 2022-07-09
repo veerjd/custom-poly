@@ -40,6 +40,7 @@ module.exports = {
         };
 
         commands.forEach((cmd) => {
+          if(!cmd.category) return;
           const category = categoriesMapped[cmd.category];
           category[cmd.name] = {
             name: cmd.name,
