@@ -13,7 +13,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const size = args[1];
       if (size) {
@@ -31,6 +31,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

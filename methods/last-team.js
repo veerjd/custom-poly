@@ -11,4 +11,9 @@ module.exports = {
     });
     return lastTeam;
   },
+  nextTeamId: async () => (await query('SELECT id FROM teams', [])).rows.reduce((prevValue, curValue) => {
+    if (!prevValue || !prevValue.id) return curValue;
+    if (prevValue.id < curValue.id) return curValue;
+    return prevValue;
+  }).id + 1,
 };

@@ -17,7 +17,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const userId = args[2].substring(2, 20);
       const game = args[1];
@@ -124,6 +124,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

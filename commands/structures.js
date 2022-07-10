@@ -30,6 +30,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

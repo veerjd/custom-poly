@@ -1,5 +1,5 @@
 Users table:
-    user_id PK (Discord user id)
+    id PK (Discord user id)
     name (server nickname)
     game_name (in-game name)
     games (total games played)

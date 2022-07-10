@@ -16,7 +16,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const userId = message.author.id;
       const game = args[1];
@@ -29,7 +29,7 @@ module.exports = {
       const gameName = args.slice(2, args.length).join(' ');
 
       if (game && gameInfo) {
-        if (players.includes(userId)) {
+        if (players.includes(userId) || mod) {
           if (gameInfo.status === 'open' || gameInfo.status === 'ongoing') {
             await query('UPDATE games SET name = $1 WHERE id = $2', [gameName, game]);
             if(gameInfo.name === 'unnamed') {
@@ -56,6 +56,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

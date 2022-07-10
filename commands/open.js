@@ -1,4 +1,5 @@
 const { query } = require('../db');
+const { nextTeamId } = require('../methods/last-team');
 
 module.exports = {
   name: 'open',
@@ -15,7 +16,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const userId = message.author.id;
       const checkUser = (
@@ -177,15 +178,15 @@ module.exports = {
 
           if (game.teams > 1) {
             const team = await query(
-              'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, `A`, $2)',
-              [gameId, [userId]]
+              'INSERT INTO teams VALUES ($1, $2, `A`, $3)',
+              [nextTeamId(), gameId, [userId]]
             );
             returnMsg += ' on team A.';
           } else {
             const userName = (await query('SELECT name FROM users WHERE id = $1', [userId])).rows[0].name;
             await query(
-              'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
-              [gameId, userName, [userId]]
+              'INSERT INTO teams VALUES ($1, $2, $3, $4)',
+              [nextTeamId(), gameId, userName, [userId]]
             );
             returnMsg += '.';
           }
@@ -201,6 +202,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

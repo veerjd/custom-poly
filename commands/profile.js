@@ -15,16 +15,16 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       let userId;
-      if (args.length === 0) {
+      if (args.length === 1) {
         userId = message.author.id;
       } else {
         userId = args[1].substring(2, 20);
       }
       const user = (
-        await query('SELECT * FROM users WHERE user_id = $1', [userId])
+        await query('SELECT * FROM users WHERE id = $1', [userId])
       ).rows[0];
 
       returnMsg += `**${user.name}'s Profile**\n__In-game name:__ ${user.game_name}\n__Games played:__ ${user.games}\n__Wins:__ ${user.wins}\n\n*Games ${user.name} is currently in:*`;
@@ -53,6 +53,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

@@ -85,9 +85,7 @@ bot.on('messageCreate', async (message) => {
     // EXECUTE COMMAND
     const replyObj = await command.execute(message, message.member.permissions.has('MANAGE_SERVER'));
 
-    // logUse(message, logChannel); supposed to log the command?
-
-    replyObj.content.forEach(async (other) => {
+    /* replyObj.content.forEach(async (other) => {
       const warnings = await message.channel.send(other[0]);
       if (replyObj.deleteContent) setTimeout(() => warnings.delete(), 15000);
     });
@@ -97,13 +95,9 @@ bot.on('messageCreate', async (message) => {
       replyObj.discord.title === undefined &&
       replyObj.discord.fields.length === 0
     )
-      return;
+      return; */
 
-    const msg = buildEmbed(replyObj);
-
-    await message.channel.send({ embeds: [msg] });
-
-    return;
+    await message.channel.send(replyObj[0]);
   } catch (error) {
     console.log(error);
     if (error.stack)

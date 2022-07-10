@@ -3,7 +3,7 @@ const { query } = require('../db');
 module.exports = {
   name: 'register',
   description:
-    'Register yourself in my database. Must specify your in-game name.',
+    'Register yourself or update your registry in my database. Must specify your in-game name.',
   aliases: ['rg'],
   shortUsage(prefix) {
     return `\`${prefix}rg\``;
@@ -16,11 +16,11 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const userId = message.author.id;
       const existingUser = (
-        await query('SELECT user_id FROM users WHERE user_id = $1', [userId])
+        await query('SELECT id FROM users WHERE id = $1', [userId])
       ).rows;
       if (existingUser.length === 0) {
         const userGameName = args[1];
@@ -37,13 +37,19 @@ module.exports = {
             '`!register` takes your in-game name as an argument. Do `!help register` for more information.';
         }
       } else {
-        returnMsg =
-          'You are already registered. Use `!update` to update your information.';
+        const userGameName = args[1];
+        const userName = message.member.nickname;
+        if (userGameName || mod) {
+          await query('UPDATE users SET name = $1, game_name = $2 WHERE id = $3', [userName, userGameName, userId]);
+        } else {
+          await query('UPDATE users SET name = $1 WHERE id = $2', [userName, userId]);
+        }
+        returnMsg = 'Successfully updated your information in my database.';
       }
     } catch (error) {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

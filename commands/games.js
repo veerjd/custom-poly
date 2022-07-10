@@ -15,7 +15,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       if (['ongoing', 'running', 'inprogress'].includes(args[1])) {
         const games = (await db.query(
@@ -42,13 +42,12 @@ module.exports = {
         for (const game of games) {
           returnMsg += `\n__Game ${game.id}:__ ${game.structure} hosted by <@${game.host}>`;
         }
-        returnMsg += '\n\n*Ongoing games cannot be joined.*';
+        returnMsg += '\n\n*You can join one of these games with the `!join` command.*';
       }
     } catch (error) {
       throw error;
     }
 
-    const returnArray = [].push(returnMsg);
-    return returnArray;
+    return [returnMsg];
   },
 };

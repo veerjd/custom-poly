@@ -16,53 +16,73 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const game = args[1];
-      const gameInfo = (await db.query(
-        'SELECT structure, status, name, host FROM games WHERE id = $1',
-        [game]
-      )).rows[0];
-      if (game && gameInfo) {
-        const players = await getPlayerIds(game);
-        const teams = (await db.query(
-          'SELECT name, player_ids FROM teams WHERE game_id = $1',
+      const gameInfo = (
+        await db.query(
+          'SELECT structure, status, name, host FROM games WHERE id = $1',
           [game]
-        )).rows;
+        )
+      ).rows[0];
+      if (game && gameInfo) {
+        if (gameInfo.status !== 'deleted') {
+          const players = await getPlayerIds(game);
+          const teams = (
+            await db.query(
+              'SELECT name, player_ids FROM teams WHERE game_id = $1',
+              [game]
+            )
+          ).rows;
 
-        returnMsg += `**__Game ${game}`;
-        if (gameInfo.name !== 'unnamed') {
-          returnMsg.push(`: ${gameInfo.name}`);
-        }
-        returnMsg += `__**\nGame mode: ${gameInfo.structure} \nThis game `;
-        if (gameInfo.status === 'completed' || gameInfo.status === 'deleted') {
-          returnMsg.push(
-            `was ${gameInfo.status} and was hosted by <@${gameInfo.host}>.`
-          );
-        } else {
-          returnMsg.push(`is ${gameInfo.status} and hosted by <@${gameInfo.host}>.`);
-        }
-
-        if (teams.length === players.length) {
-          returnMsg += '\n';
-          for (const id of players) {
-            const playerInfo = (await db.query(
-              'SELECT name, game_name FROM users WHERE id = $1',
-              [id]
-            )).rows[0];
-            returnMsg += `\n**${playerInfo.name}** - *${playerInfo.gameName}*`;
+          returnMsg += `**__Game ${game}`;
+          if (gameInfo.name !== 'unnamed') {
+            returnMsg.push(`: ${gameInfo.name}`);
           }
-        } else {
-          for (const team of teams) {
-            const playerNames = (await db.query(
-              'SELECT name, game_name FROM users WHERE id = $1 OR id = $2 OR id = $3 OR id = $4',
-              team.player_ids
-            )).rows;
-            returnMsg += `\n\n**Team ${team.name}**`;
-            for (const player of playerNames) {
-              returnMsg.push(`\n\t${player.name} - *${player.game_name}*`);
+          returnMsg += `__**\nGame mode: ${gameInfo.structure} \nThis game `;
+          if (
+            gameInfo.status === 'completed' ||
+            gameInfo.status === 'deleted'
+          ) {
+            returnMsg.push(
+              `was ${gameInfo.status} and was hosted by <@${gameInfo.host}>.`
+            );
+          } else {
+            returnMsg.push(
+              `is ${gameInfo.status} and hosted by <@${gameInfo.host}>.`
+            );
+          }
+
+          if (teams.length === players.length) {
+            returnMsg += '\n';
+            for (const id of players) {
+              const playerInfo = (
+                await db.query(
+                  'SELECT name, game_name FROM users WHERE id = $1',
+                  [id]
+                )
+              ).rows[0];
+              returnMsg += `\n**${playerInfo.name}** - *${playerInfo.gameName}*`;
+            }
+          } else {
+            let playerIds = [];
+            for (const team of teams) {
+              returnMsg += `\n\n**Team ${team.name}**`;
+              playerIds = team.player_ids;
+              while(playerIds.length > 0) {
+                const player = (
+                  await db.query(
+                    'SELECT name, game_name FROM users WHERE id = $1',
+                    [playerIds[0]]
+                  )
+                ).rows[0];
+                returnMsg.push(`\n\t${player.name} - *${player.game_name}*`);
+                playerIds.shift();
+              }
             }
           }
+        } else {
+          returnMsg = `Game ${game} has been deleted.`;
         }
       } else {
         if (game) {
@@ -76,6 +96,6 @@ module.exports = {
       throw error;
     }
 
-    return [].push(returnMsg);
+    return [returnMsg];
   },
 };

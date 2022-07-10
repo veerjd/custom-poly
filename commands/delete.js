@@ -16,7 +16,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const game = args[1];
       const gameInfo = (await db.query(
@@ -45,7 +45,7 @@ module.exports = {
                   id,
                 ]);
               }
-              return [].push(returnMsg);
+              return [returnMsg];
 
             case 'completed':
               return [

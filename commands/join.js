@@ -1,5 +1,5 @@
 const db = require('../db');
-const { startGame, getLastTeam } = require('../methods');
+const { startGame, getLastTeam, nextTeamId } = require('../methods');
 
 module.exports = {
   name: 'join',
@@ -16,7 +16,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     try {
       const game = args[1];
       const gameInfo = (await db.query(
@@ -40,6 +40,7 @@ module.exports = {
             'SELECT * FROM teams WHERE game_id = $1',
             [game]
           )).rows;
+          const newTeamId = nextTeamId();
 
           if (teams) {
             if (gameInfo.teams === 1) {
@@ -60,13 +61,13 @@ module.exports = {
                   lastTeamName.charCodeAt(0) + 1
                 );
                 lastTeam = await db.query(
-                  'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
-                  [game, newTeamName, [userId]]
+                  'INSERT INTO teams VALUES ($1, $2, $3, $4)',
+                  [newTeamId, game, newTeamName, [userId]]
                 );
               } else {
                 lastTeam = await db.query(
-                  'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
-                  [game, userName, [userId]]
+                  'INSERT INTO teams VALUES ($1, $2, $3, $4)',
+                  [newTeamId, game, userName, [userId]]
                 );
               }
             } else {
@@ -108,14 +109,14 @@ module.exports = {
             returnMsg = `Joined you to game ${game}`
             if (gameInfo.teams > 1) {
               await db.query(
-                'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, `A`, $2)',
-                [game, [userId]]
+                'INSERT INTO teams VALUES ($1, $2, `A`, $3)',
+                [newTeamId, game, [userId]]
               );
               returnMsg += ' on team A.';
             } else {
               await db.query(
-                'INSERT INTO teams (game_id, name, player_ids) VALUES ($1, $2, $3)',
-                [game, userName, [userId]]
+                'INSERT INTO teams VALUES ($1, $2, $3, $4)',
+                [newTeamId, game, userName, [userId]]
               );
               returnMsg += '.';
             }
@@ -144,7 +145,6 @@ module.exports = {
       throw error;
     }
 
-    const returnArray = [].push(returnMsg);
-    return returnArray;
+    return [returnMsg];
   },
 };

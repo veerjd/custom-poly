@@ -14,7 +14,7 @@ module.exports = {
   usersAllowed: ['217385992837922819', '776656382010458112'],
   execute: async (message, mod) => {
     let returnMsg = '';
-    const args = message.split(' ');
+    const args = message.content.split(' ');
     const { commands } = message.client;
 
     try {
@@ -24,10 +24,11 @@ module.exports = {
           commands.find(
             (cmnd) => cmnd.aliases && cmnd.aliases.includes(args[1])
           );
+        const prefix = process.env.prefix;
         if (cmd) {
-          returnMsg += `**${cmd.name}** \n${cmd.description} \nLong form: ${cmd.longUsage} \nShort form: ${cmd.shortUsage} \n**Aliases:**`;
+          returnMsg += `**${cmd.name}** \n${cmd.description} \nLong form: ${cmd.longUsage(prefix)} \nShort form: ${cmd.shortUsage(prefix)} \n**Aliases:**`;
           for (const alias of cmd.aliases) {
-            returnMsg += `${alias}, `;
+            returnMsg += alias + ', ';
           }
           returnMsg = returnMsg.substring(0, returnMsg.length - 2);
         } else {
@@ -48,7 +49,7 @@ module.exports = {
           };
         });
 
-        returnMsg += 'Help card for all commands\n';
+        returnMsg += 'Help for all commands\n';
 
         for (const [cat, commandsList] of Object.entries(categoriesMapped)) {
           returnMsg += `\n**${cat}** \n`;
@@ -63,7 +64,6 @@ module.exports = {
       throw error;
     }
 
-    const returnArray = [].push(returnMsg);
-    return returnArray;
+    return [returnMsg];
   },
 };
