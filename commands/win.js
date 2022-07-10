@@ -20,10 +20,6 @@ module.exports = {
     const args = message.content.split(' ');
     try {
       const game = args[1];
-      //
-      //
-      //
-      // NEEDS FINISHING
       const gameInfo = (
         await query('SELECT status FROM games WHERE id = $1', [game])
       ).rows[0];
@@ -49,10 +45,14 @@ module.exports = {
                     winners.push(playerId);
                   }
                 } else {
-                  const teams = (await query('SELECT name FROM teams WHERE game_id = $1', [game])).rows;
+                  const teams = (
+                    await query('SELECT name FROM teams WHERE game_id = $1', [
+                      game,
+                    ])
+                  ).rows;
                   for (let i = 2; i < args.length; i++) {
                     const teamName = args[i];
-                    if(!teams.includes({ name: teamName })) {
+                    if (!teams.includes({ name: teamName })) {
                       returnMsg = `Team ${teamName} was not found in game ${game}. Make sure you typed the game ID correctly.`;
                       winners = [];
                       break;
@@ -68,18 +68,22 @@ module.exports = {
                 }
 
                 if (winners) {
-                  for(const player of winners) {
-                    const numberWins = (await query(
-                      'SELECT wins FROM users WHERE id = $1',
-                      [user]
-                    )).rows[0].wins;
+                  for (const player of winners) {
+                    const numberWins = (
+                      await query('SELECT wins FROM users WHERE id = $1', [
+                        user,
+                      ])
+                    ).rows[0].wins;
                     await query('UPDATE users SET wins = $1 WHERE id = $2', [
                       numberWins + 1,
                       user,
                     ]);
                   }
 
-                  await query('UPDATE games SET status = "complete" WHERE id = $1', [game]);
+                  await query(
+                    'UPDATE games SET status = "complete" WHERE id = $1',
+                    [game]
+                  );
                 }
               } else {
                 returnMsg = 'You must specify the winners of the game.';
