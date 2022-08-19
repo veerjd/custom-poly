@@ -9,8 +9,10 @@ const fs = require('fs');
 const prefix = process.env.PREFIX;
 // const help = require('./commands/help')
 
-const logChannel =
-  'https://discord.com/channels/606284456474443786/684944690893946972';
+const customPoly = bot.guilds.cache.get('606284456474443786');
+const logChannel = customPoly.channels
+  .fetch('684944690893946972')
+  .catch(console.error);
 
 bot.commands = new Collection();
 const commandFiles = fs
@@ -83,7 +85,10 @@ bot.on('messageCreate', async (message) => {
       return message.channel.send('Only an admin can use this command, sorry!');
 
     // EXECUTE COMMAND
-    const replyObj = await command.execute(message, message.member.permissions.has('MANAGE_SERVER'));
+    const replyObj = await command.execute(
+      message,
+      message.member.permissions.has('MANAGE_SERVER')
+    );
 
     /* replyObj.content.forEach(async (other) => {
       const warnings = await message.channel.send(other[0]);
@@ -111,8 +116,8 @@ bot.on('messageCreate', async (message) => {
 
 module.exports = {
   // send a DM from the bot
-  sendDm: (userId, message) => bot.users.get(userId).send(message)
-}
+  sendDm: (userId, message) => bot.users.get(userId).send(message),
+};
 
 /* to delete a bot message with the wastebasket reaction
 bot.on('messageReactionAdd', async (reaction, user) => {
