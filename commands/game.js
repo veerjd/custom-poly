@@ -69,7 +69,7 @@ module.exports = {
             for (const team of teams) {
               returnMsg += `\n\n**Team ${team.name}**`;
               playerIds = team.player_ids;
-              while(playerIds.length > 0) {
+              while (playerIds.length > 0) {
                 const player = (
                   await db.query(
                     'SELECT name, game_name FROM users WHERE id = $1',

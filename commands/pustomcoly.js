@@ -14,7 +14,8 @@ module.exports = {
   execute: async (message, mod) => {
     let returnMsg = '';
     try {
-      returnMsg = 'Well done, you found the Easter egg! Here\'s a neat video to check out: https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+      returnMsg =
+        'Well done, you found the Easter egg! Here\'s a neat video to check out: https://www.youtube.com/watch?v=dQw4w9WgXcQ';
     } catch (error) {
       throw error;
     }

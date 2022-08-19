@@ -26,7 +26,11 @@ module.exports = {
           );
         const prefix = process.env.prefix;
         if (cmd) {
-          returnMsg += `**${cmd.name}** \n${cmd.description} \nLong form: ${cmd.longUsage(prefix)} \nShort form: ${cmd.shortUsage(prefix)} \n**Aliases:**`;
+          returnMsg += `**${cmd.name}** \n${
+            cmd.description
+          } \nLong form: ${cmd.longUsage(
+            prefix
+          )} \nShort form: ${cmd.shortUsage(prefix)} \n**Aliases:**`;
           for (const alias of cmd.aliases) {
             returnMsg += alias + ', ';
           }
@@ -41,7 +45,7 @@ module.exports = {
         };
 
         commands.forEach((cmd) => {
-          if(!cmd.category) return;
+          if (!cmd.category) return;
           const category = categoriesMapped[cmd.category];
           category[cmd.name] = {
             name: cmd.name,

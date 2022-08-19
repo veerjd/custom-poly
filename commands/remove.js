@@ -110,7 +110,7 @@ module.exports = {
             returnMsg = `That player is not in game ${game}.`;
           }
         } else {
-          returnMsg = 'You do not have permission to run this command.'
+          returnMsg = 'You do not have permission to run this command.';
         }
       } else {
         if (game) {

@@ -40,9 +40,15 @@ module.exports = {
         const userGameName = args[1];
         const userName = message.member.nickname;
         if (userGameName || mod) {
-          await query('UPDATE users SET name = $1, game_name = $2 WHERE id = $3', [userName, userGameName, userId]);
+          await query(
+            'UPDATE users SET name = $1, game_name = $2 WHERE id = $3',
+            [userName, userGameName, userId]
+          );
         } else {
-          await query('UPDATE users SET name = $1 WHERE id = $2', [userName, userId]);
+          await query('UPDATE users SET name = $1 WHERE id = $2', [
+            userName,
+            userId,
+          ]);
         }
         returnMsg = 'Successfully updated your information in my database.';
       }

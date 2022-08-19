@@ -18,7 +18,7 @@ module.exports = {
     try {
       returnMsg += '**__Structures List__**\n';
       for (const struc of structures) {
-        if(struc.mode === 'FFA') {
+        if (struc.mode === 'FFA') {
           returnMsg += '\n';
         }
         returnMsg += `\n__${struc.mode}:__ ${struc.description}`;

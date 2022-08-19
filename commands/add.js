@@ -20,17 +20,19 @@ module.exports = {
     const args = message.content.split(' ');
     try {
       const game = args[1];
-      const gameInfo = (await db.query(
-        'SELECT status, host, teams, players FROM games WHERE id = $1',
-        [game]
-      )).rows[0];
+      const gameInfo = (
+        await db.query(
+          'SELECT status, host, teams, players FROM games WHERE id = $1',
+          [game]
+        )
+      ).rows[0];
 
       const userId = args[2].substring(2, 20);
       let userName;
       try {
-        userName = (await db.query('SELECT name FROM users WHERE id = $1', [
-          userId,
-        ])).rows[0].name;
+        userName = (
+          await db.query('SELECT name FROM users WHERE id = $1', [userId])
+        ).rows[0].name;
       } catch {
         return [
           'That user was not found in my database. Make sure you ping the user.',
@@ -40,10 +42,9 @@ module.exports = {
       if (message.author.id === gameInfo.host || mod) {
         if (game && gameInfo) {
           if (gameInfo.status === 'open' || gameInfo.status === 'ongoing') {
-            const teams = (await db.query(
-              'SELECT * FROM teams WHERE game_id = $1',
-              [game]
-            )).rows;
+            const teams = (
+              await db.query('SELECT * FROM teams WHERE game_id = $1', [game])
+            ).rows;
             const newTeamId = nextTeamId();
 
             if (teams) {
@@ -95,10 +96,12 @@ module.exports = {
                 teams.length === gameInfo.teams &&
                 gameInfo.players === filledSlots
               ) {
-                const gameInfo2 = (await db.query(
-                  'SELECT structure, host FROM games WHERE id = $1',
-                  [game]
-                )).rows[0];
+                const gameInfo2 = (
+                  await db.query(
+                    'SELECT structure, host FROM games WHERE id = $1',
+                    [game]
+                  )
+                ).rows[0];
 
                 startGame(game, gameInfo2.structure);
                 await db.query(
@@ -111,22 +114,24 @@ module.exports = {
               }
             } else {
               if (gameInfo.teams > 1) {
-                await db.query(
-                  'INSERT INTO teams VALUES ($1, $2, `A`, $3)',
-                  [newTeamId, game, [userId]]
-                );
+                await db.query('INSERT INTO teams VALUES ($1, $2, `A`, $3)', [
+                  newTeamId,
+                  game,
+                  [userId],
+                ]);
               } else {
-                await db.query(
-                  'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                  [newTeamId, game, userName, [userId]]
-                );
+                await db.query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+                  newTeamId,
+                  game,
+                  userName,
+                  [userId],
+                ]);
               }
             }
 
-            const numberGames = (await db.query(
-              'SELECT games FROM users WHERE id = $1',
-              [userId]
-            )).rows[0].games;
+            const numberGames = (
+              await db.query('SELECT games FROM users WHERE id = $1', [userId])
+            ).rows[0].games;
             await db.query('UPDATE users SET games = $1 WHERE id = $2', [
               numberGames + 1,
               userId,

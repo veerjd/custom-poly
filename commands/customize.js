@@ -213,10 +213,12 @@ module.exports = {
               const userName = (
                 await query('SELECT name FROM users WHERE id = $1', [userId])
               ).rows[0].name;
-              await query(
-                'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                [nextTeamId(), gameId, userName, [userId]]
-              );
+              await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+                nextTeamId(),
+                gameId,
+                userName,
+                [userId],
+              ]);
               returnMsg += '.';
             }
 

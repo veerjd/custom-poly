@@ -171,7 +171,9 @@ module.exports = {
               );
               break;
             default:
-              return ['The `!open` command takes a game type as an argument. Do `!structures` to see a list of game types.'];
+              return [
+                'The `!open` command takes a game type as an argument. Do `!structures` to see a list of game types.',
+              ];
           }
 
           returnMsg += `Successfully created ${game.structure} game ${gameId}.\nJoined you to game ${gameId}`;
@@ -183,11 +185,15 @@ module.exports = {
             );
             returnMsg += ' on team A.';
           } else {
-            const userName = (await query('SELECT name FROM users WHERE id = $1', [userId])).rows[0].name;
-            await query(
-              'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-              [nextTeamId(), gameId, userName, [userId]]
-            );
+            const userName = (
+              await query('SELECT name FROM users WHERE id = $1', [userId])
+            ).rows[0].name;
+            await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+              nextTeamId(),
+              gameId,
+              userName,
+              [userId],
+            ]);
             returnMsg += '.';
           }
         } else {
