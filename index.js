@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 require('dotenv').config();
-const { Client, Collection, buildEmbed } = require('discord.js');
+const { Client, Collection, TextChannel } = require('discord.js');
 const bot = new Client({
   partials: ['MESSAGE', 'CHANNEL', 'REACTION'],
   intents: ['GUILDS', 'GUILD_MESSAGES', 'GUILD_MESSAGE_REACTIONS'],
@@ -8,11 +8,7 @@ const bot = new Client({
 const fs = require('fs');
 const prefix = process.env.PREFIX;
 // const help = require('./commands/help')
-
-const customPoly = bot.guilds.cache.get('606284456474443786');
-const logChannel = customPoly && customPoly.channels
-  .fetch('684944690893946972')
-  .catch(console.error);
+let logChannel;
 
 bot.commands = new Collection();
 const commandFiles = fs
@@ -32,6 +28,10 @@ for (const file of commandFiles) {
 bot.once('ready', () => {
   bot.user.setActivity('!help', { type: 'PLAYING' });
   console.log(`Logged in as ${bot.user.username}`);
+
+  const cPId = process.env.GUILDID;
+  const customPoly = bot.guilds.cache.get(cPId);
+  logChannel = customPoly.channels.cache.get('684944690893946972');
 });
 
 // --------------------------------------
@@ -87,7 +87,7 @@ bot.on('messageCreate', async (message) => {
     // EXECUTE COMMAND
     const replyObj = await command.execute(
       message,
-      message.member.permissions.has('MANAGE_SERVER')
+      message.member.permissions.has('MANAGE_GUILD')
     );
 
     /* replyObj.content.forEach(async (other) => {
@@ -105,12 +105,14 @@ bot.on('messageCreate', async (message) => {
     await message.channel.send(replyObj[0]);
   } catch (error) {
     console.log(error);
-    if (error.stack)
-      logChannel.send(
+    if (error.stack && logChannel instanceof TextChannel) {
+      await logChannel.send(
         `**${message.cleanContent}** by ${message.author} (@${message.author.tag})\n${error}\n${message.url}`
       );
-
-    return message.channel.send(`${error}`).then().catch(console.error);
+    }
+    if (message.channel !== logChannel) {
+      message.channel.send(`${error}`).then().catch(console.error);
+    }
   }
 });
 

@@ -1,7 +1,8 @@
 /* Set up game channels when a game is started. */
 const { query } = require('../db');
 const { guild, Permissions } = require('discord.js');
-const { getPlayerIds, createChannel } = require('.');
+const { getPlayerIds } = require('./get-players');
+const { createChannel } = require('./create-channel');
 const { sendDm } = require('../index');
 
 module.exports = {

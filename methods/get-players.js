@@ -1,4 +1,5 @@
 const { db } = require('../db');
+
 module.exports = {
   getPlayerIds: async (gameId) => {
     const returned = await db.query(

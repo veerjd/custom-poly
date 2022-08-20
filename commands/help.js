@@ -26,11 +26,11 @@ module.exports = {
           );
         const prefix = process.env.prefix;
         if (cmd) {
-          returnMsg += `**${cmd.name}** \n${
+          returnMsg += `__${cmd.name}__ \n${
             cmd.description
           } \nLong form: ${cmd.longUsage(
             prefix
-          )} \nShort form: ${cmd.shortUsage(prefix)} \n**Aliases:**`;
+          )} \nShort form: ${cmd.shortUsage(prefix)} \n**Aliases:** `;
           for (const alias of cmd.aliases) {
             returnMsg += alias + ', ';
           }
@@ -53,16 +53,16 @@ module.exports = {
           };
         });
 
-        returnMsg += 'Help for all commands\n';
+        returnMsg += '*Help for All Commands*\n';
 
         for (const [cat, commandsList] of Object.entries(categoriesMapped)) {
-          returnMsg += `\n**${cat}** \n`;
+          returnMsg += `\n**__${cat}__** \n`;
           for (const [name, details] of Object.entries(commandsList)) {
             returnMsg += `**${name}**: ${details.description} \n`;
           }
         }
 
-        returnMsg += `For more help on a command, use ${process.env.PREFIX}help {command}.`;
+        returnMsg += `\nFor more help on a command, use ${process.env.PREFIX}help {command}.`;
       }
     } catch (error) {
       throw error;
