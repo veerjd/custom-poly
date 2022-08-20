@@ -35,12 +35,12 @@ module.exports = {
           let game;
           const gameId =
             (await query('SELECT id FROM games', [])).rows.reduce(
-              (prevValue, curValue) => {
+              ((prevValue, curValue) => {
                 if (!prevValue || !prevValue.id) return curValue;
                 if (prevValue.id < curValue.id) return curValue;
                 return prevValue;
-              }
-            ) + 1;
+              }), { id: 0 }
+            ).id + 1;
 
           switch (struc) {
             case 'werewolf':

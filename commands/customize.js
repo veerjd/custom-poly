@@ -46,8 +46,9 @@ module.exports = {
                   if (!prevValue || !prevValue.id) return curValue;
                   if (prevValue.id < curValue.id) return curValue;
                   return prevValue;
-                }
-              ) + 1;
+                },
+                { id: 0 }
+              ).id + 1;
 
             let newModeLetters = newMode.split('');
             let space = true;

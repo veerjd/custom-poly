@@ -32,7 +32,8 @@ module.exports = {
                 if (!prevValue || !prevValue.id) return curValue;
                 if (prevValue.id < curValue.id) return curValue;
                 return prevValue;
-              }
+              },
+              { id: 0 }
             ).id + 1;
           await query('INSERT INTO players VALUES ($1, $2, $3, $4, 0, 0)', [
             playerId,
