@@ -10,13 +10,13 @@ const prefix = process.env.PREFIX;
 // const help = require('./commands/help')
 
 const customPoly = bot.guilds.cache.get('606284456474443786');
-const logChannel = customPoly.channels
+const logChannel = customPoly && customPoly.channels
   .fetch('684944690893946972')
   .catch(console.error);
 
 bot.commands = new Collection();
 const commandFiles = fs
-  .readdirSync('./bot/commands')
+  .readdirSync('./commands')
   .filter((file) => file.endsWith('.js'));
 
 for (const file of commandFiles) {

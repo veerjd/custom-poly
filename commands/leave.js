@@ -1,5 +1,6 @@
 const { query } = require('../db');
-const { getPlayerIds, getLastTeam } = require('../methods');
+const { getPlayerIds } = require('../methods/get-players');
+const { getLastTeam } = require('../methods/last-team');
 
 module.exports = {
   name: 'leave',

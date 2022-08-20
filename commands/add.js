@@ -1,5 +1,6 @@
 const db = require('../db');
-const { startGame, getLastTeam, nextTeamId } = require('../methods/');
+const { startGame } = require('../methods/start-game');
+const { nextTeamId, getLastTeam } = require('../methods/last-team');
 
 module.exports = {
   name: 'add',

@@ -1,5 +1,6 @@
 const { query } = require('../db');
-const { createChannel, nextTeamId } = require('../methods');
+const { createChannel } = require('../methods/create-channel');
+const { nextTeamId } = require('../methods/last-team');
 
 module.exports = {
   name: 'customize',
