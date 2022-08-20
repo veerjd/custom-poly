@@ -20,13 +20,22 @@ module.exports = {
     try {
       const userId = message.author.id;
       const existingUser = (
-        await query('SELECT id FROM users WHERE id = $1', [userId])
+        await query('SELECT id FROM players WHERE user_id = $1', [userId])
       ).rows;
       if (existingUser.length === 0) {
         const userGameName = args[1];
         if (userGameName || mod) {
           const userName = message.member.nickname;
-          await query('INSERT INTO users VALUES ($1, $2, $3, 0, 0)', [
+          const playerId =
+            (await query('SELECT id FROM players', [])).rows.reduce(
+              (prevValue, curValue) => {
+                if (!prevValue || !prevValue.id) return curValue;
+                if (prevValue.id < curValue.id) return curValue;
+                return prevValue;
+              }
+            ).id + 1;
+          await query('INSERT INTO players VALUES ($1, $2, $3, $4, 0, 0)', [
+            playerId,
             userId,
             userName,
             userGameName,
@@ -37,17 +46,18 @@ module.exports = {
             '`!register` takes your in-game name as an argument. Do `!help register` for more information.';
         }
       } else {
+        const playerId = existingUser[0].id;
         const userGameName = args[1];
         const userName = message.member.nickname;
         if (userGameName || mod) {
           await query(
-            'UPDATE users SET name = $1, game_name = $2 WHERE id = $3',
-            [userName, userGameName, userId]
+            'UPDATE players SET name = $1, game_name = $2 WHERE id = $3',
+            [userName, userGameName, playerId]
           );
         } else {
-          await query('UPDATE users SET name = $1 WHERE id = $2', [
+          await query('UPDATE players SET name = $1 WHERE id = $2', [
             userName,
-            userId,
+            playerId,
           ]);
         }
         returnMsg = 'Successfully updated your information in my database.';

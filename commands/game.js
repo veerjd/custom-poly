@@ -45,7 +45,7 @@ module.exports = {
             gameInfo.status === 'deleted'
           ) {
             returnMsg.push(
-              `was ${gameInfo.status} and was hosted by <@${gameInfo.host}>.`
+              `was ${gameInfo.status}, and it was hosted by <@${gameInfo.host}>.`
             );
           } else {
             returnMsg.push(
@@ -55,11 +55,11 @@ module.exports = {
 
           if (teams.length === players.length) {
             returnMsg += '\n';
-            for (const id of players) {
+            for (const playerId of players) {
               const playerInfo = (
                 await db.query(
-                  'SELECT name, game_name FROM users WHERE id = $1',
-                  [id]
+                  'SELECT name, game_name FROM players WHERE id = $1',
+                  [playerId]
                 )
               ).rows[0];
               returnMsg += `\n**${playerInfo.name}** - *${playerInfo.gameName}*`;
@@ -72,7 +72,7 @@ module.exports = {
               while (playerIds.length > 0) {
                 const player = (
                   await db.query(
-                    'SELECT name, game_name FROM users WHERE id = $1',
+                    'SELECT name, game_name FROM players WHERE id = $1',
                     [playerIds[0]]
                   )
                 ).rows[0];

@@ -29,11 +29,15 @@ module.exports = {
       ).rows[0];
 
       const userId = args[2].substring(2, 20);
-      let userName;
+      let userName, playerId;
       try {
-        userName = (
-          await db.query('SELECT name FROM users WHERE id = $1', [userId])
-        ).rows[0].name;
+        const returned = (
+          await db.query('SELECT id, name FROM players WHERE user_id = $1', [
+            userId,
+          ])
+        ).rows[0];
+        userName = returned.name;
+        playerId = returned.id;
       } catch {
         return [
           'That user was not found in my database. Make sure you ping the user.',
@@ -68,16 +72,16 @@ module.exports = {
                   );
                   lastTeam = await db.query(
                     'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                    [newTeamId, game, newTeamName, [userId]]
+                    [newTeamId, game, newTeamName, [playerId]]
                   );
                 } else {
                   lastTeam = await db.query(
                     'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                    [newTeamId, game, userName, [userId]]
+                    [newTeamId, game, userName, [playerId]]
                   );
                 }
               } else {
-                lastTeam.player_ids.push(userId);
+                lastTeam.player_ids.push(playerId);
                 await db.query(
                   'UPDATE team SET player_ids = $1 WHERE id = $2',
                   [lastTeam.player_ids, lastTeam.id]
@@ -118,24 +122,26 @@ module.exports = {
                 await db.query('INSERT INTO teams VALUES ($1, $2, `A`, $3)', [
                   newTeamId,
                   game,
-                  [userId],
+                  [playerId],
                 ]);
               } else {
                 await db.query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
                   newTeamId,
                   game,
                   userName,
-                  [userId],
+                  [playerId],
                 ]);
               }
             }
 
             const numberGames = (
-              await db.query('SELECT games FROM users WHERE id = $1', [userId])
+              await db.query('SELECT games FROM players WHERE id = $1', [
+                playerId,
+              ])
             ).rows[0].games;
-            await db.query('UPDATE users SET games = $1 WHERE id = $2', [
+            await db.query('UPDATE players SET games = $1 WHERE id = $2', [
               numberGames + 1,
-              userId,
+              playerId,
             ]);
           } else {
             returnMsg = `Game ${game} is not open and players cannot be added to it.`;

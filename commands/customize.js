@@ -22,12 +22,13 @@ module.exports = {
     try {
       const userId = message.author.id;
       const checkUser = (
-        await query('SELECT id FROM users WHERE id = $1', [userId])
-      ).rows.length;
-      if (checkUser > 0) {
+        await query('SELECT id FROM players WHERE user_id = $1', [userId])
+      ).rows;
+      if (checkUser.length > 0) {
         if (
           message.member.roles.cache.some((role) => role.name === 'customizer')
         ) {
+          const playerId = checkUser[0].id;
           const newMode = args[1].toLowerCase();
           const struc = args[2].toLowerCase();
           let size;
@@ -67,7 +68,7 @@ module.exports = {
                 if (size) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, $4)',
-                    [gameId, newModeName + ' (Werewolf)', userId, size]
+                    [gameId, newModeName + ' (Werewolf)', playerId, size]
                   );
                 } else {
                   return [
@@ -80,7 +81,7 @@ module.exports = {
                 if (size && size > 4) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, $4)',
-                    [gameId, newModeName + ' (Bang!)', userId, size]
+                    [gameId, newModeName + ' (Bang!)', playerId, size]
                   );
                 } else {
                   return [
@@ -95,7 +96,7 @@ module.exports = {
                 if (size) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, $4)',
-                    [gameId, newModeName + ' (Game of Thrones)', userId, size]
+                    [gameId, newModeName + ' (Game of Thrones)', playerId, size]
                   );
                 } else {
                   return [
@@ -108,7 +109,7 @@ module.exports = {
                 if (size) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, $4)',
-                    [gameId, newModeName + ' (Zombies)', userId, size]
+                    [gameId, newModeName + ' (Zombies)', playerId, size]
                   );
                 } else {
                   return [
@@ -122,12 +123,12 @@ module.exports = {
                 if (size && size === 3) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, 3)',
-                    [gameId, newModeName + ' (Where\'s Waldo?)', userId]
+                    [gameId, newModeName + ' (Where\'s Waldo?)', playerId]
                   );
                 } else {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, 2)',
-                    [gameId, newModeName + ' (Where\'s Waldo?)', userId]
+                    [gameId, newModeName + ' (Where\'s Waldo?)', playerId]
                   );
                 }
                 break;
@@ -136,7 +137,7 @@ module.exports = {
                 if (size) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 2, $4)',
-                    [gameId, newModeName + ' (Traitor)', userId, size]
+                    [gameId, newModeName + ' (Traitor)', playerId, size]
                   );
                 } else {
                   return [
@@ -148,7 +149,7 @@ module.exports = {
                 if (size) {
                   game = await query(
                     'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, $4)',
-                    [gameId, newModeName + ' (FFA)', userId, size]
+                    [gameId, newModeName + ' (FFA)', playerId, size]
                   );
                 } else {
                   return [
@@ -164,7 +165,7 @@ module.exports = {
                     [
                       gameId,
                       newModeName + ' (Teams)',
-                      userId,
+                      playerId,
                       size.substring(0, 1),
                       size.substring(1, 2),
                     ]
@@ -180,20 +181,20 @@ module.exports = {
               case 'tower_defense':
                 game = await query(
                   'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, 4)',
-                  [gameId, newModeName + ' (Tower Defense)', userId]
+                  [gameId, newModeName + ' (Tower Defense)', playerId]
                 );
                 break;
               case 'powerbender':
                 game = await query(
                   'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, 2)',
-                  [gameId, newModeName + ' (Powerbender)', userId]
+                  [gameId, newModeName + ' (Powerbender)', playerId]
                 );
                 break;
               case 'makebelieve':
               case 'make-believe':
                 game = await query(
                   'INSERT INTO games VALUES ($1, $2, "open", "unnamed", $3, 1, 7)',
-                  [gameId, newModeName + ' (Make-Believe)', userId]
+                  [gameId, newModeName + ' (Make-Believe)', playerId]
                 );
                 break;
               default:
@@ -207,18 +208,20 @@ module.exports = {
             if (game.teams > 1) {
               const team = await query(
                 'INSERT INTO teams VALUES ($1, $2, `A`, $3)',
-                [nextTeamId(), gameId, [userId]]
+                [nextTeamId(), gameId, [playerId]]
               );
               returnMsg += ' on team A.';
             } else {
               const userName = (
-                await query('SELECT name FROM users WHERE id = $1', [userId])
+                await query('SELECT name FROM players WHERE id = $1', [
+                  playerId,
+                ])
               ).rows[0].name;
               await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
                 nextTeamId(),
                 gameId,
                 userName,
-                [userId],
+                [playerId],
               ]);
               returnMsg += '.';
             }

@@ -1,57 +1,55 @@
 [
   {
     "mode": "Werewolf",
-    "channel": 606909533369139209,
+    "channel": "606909533369139209",
     "description": "FFA with specified number of people. One-third of the game are werewolves."
   },
   {
     "mode": "Bang!",
-    "channel": 632235566678802466,
+    "channel": "632235566678802466",
     "description": "FFA with specified number of people, at least 5. Roles are assigned based on number of players."
   },
   {
     "mode": "Game of Thrones",
-    "channel": 632678802178441216,
+    "channel": "632678802178441216",
     "description": "FFA with specified number of people. First player is GM."
   },
   {
     "mode": "Zombies",
-    "channel": 632223390538924032,
+    "channel": "632223390538924032",
     "description": "FFA with specified number of people. One player is assigned to be the zombie to start."
   },
   {
     "mode": "Tower Defense",
-    "channel": 676511540060356608,
+    "channel": "676511540060356608",
     "description": "FFA with 4 people. One is assigned to be the runner. No arguments required."
   },
   {
     "mode": "Powerbender",
-    "channel": 611278994108579840,
+    "channel": "611278994108579840",
     "description": "FFA with 2 players. No arguments required"
   },
   {
     "mode": "Where's Waldo?",
-    "channel": 686582085703827474,
+    "channel": "686582085703827474",
     "description": "FFA with 2 or 3 players, default is 2."
   },
   {
     "mode": "Traitor",
-    "channel": 701756540587212810,
+    "channel": "701756540587212810",
     "description": "2 teams each with specified number of people. Traitors are assigned at the beginning of the game."
   },
   {
     "mode": "Make-Believe",
-    "channel": 849626560625639434,
+    "channel": "849626560625639434",
     "description": "FFA with 7 people. First player is GM, the other six are players. No arguments required."
   },
   {
     "mode": "FFA",
-    "channel": 0,
     "description": "FFA with speciied number of people."
   },
   {
     "mode": "Teams",
-    "channel": 0,
     "description": "Team game with X teams each having Y people. Specify XY as one argument without spaces."
   }
 ]

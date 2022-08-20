@@ -1,5 +1,5 @@
 const db = require('../db.js');
-const getPlayerIds = require('../methods/get-players');
+const { getUserIds, getPlayerIds } = require('../methods/get-players');
 
 module.exports = {
   name: 'delete',
@@ -25,8 +25,9 @@ module.exports = {
         ])
       ).rows[0];
       if (game && gameInfo) {
-        const players = await getPlayerIds(game);
-        if (players.includes(message.author.id) || mod) {
+        const userIds = await getUserIds(game);
+        const playerIds = await getPlayerIds(game);
+        if (userIds.includes(message.author.id) || mod) {
           switch (gameInfo.status) {
             case 'open':
             case 'ongoing':
@@ -35,14 +36,18 @@ module.exports = {
                 [game]
               );
               returnMsg = `Game ${game} has been deleted. Notifying players.`;
-              for (const id of players) {
-                returnMsg += ` <@${id}>`;
+              for (let i = 0; i < userIds.length; i++) {
+                const userId = userIds[i];
+                const playerId = playerIds[i];
+                returnMsg += ` <@${userId}>`;
                 const numberGames = (
-                  await db.query('SELECT games FROM users WHERE id = $1', [id])
+                  await db.query('SELECT games FROM players WHERE id = $1', [
+                    playerId,
+                  ])
                 ).rows[0].games;
-                await db.query('UPDATE users SET games = $1 WHERE id = $2', [
+                await db.query('UPDATE players SET games = $1 WHERE id = $2', [
                   numberGames - 1,
-                  id,
+                  playerId,
                 ]);
               }
               return [returnMsg];

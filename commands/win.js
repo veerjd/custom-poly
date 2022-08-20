@@ -42,7 +42,7 @@ module.exports = {
                       winners = [];
                       break;
                     }
-                    winners.push(playerId);
+                    winners.push((await query('SELECT id FROM players WHERE user_id = $1', [playerId])).rows[0].id);
                   }
                 } else {
                   const teams = (
@@ -68,15 +68,15 @@ module.exports = {
                 }
 
                 if (winners) {
-                  for (const player of winners) {
+                  for (const winnerId of winners) {
                     const numberWins = (
-                      await query('SELECT wins FROM users WHERE id = $1', [
-                        user,
+                      await query('SELECT wins FROM players WHERE id = $1', [
+                        winnerId,
                       ])
                     ).rows[0].wins;
-                    await query('UPDATE users SET wins = $1 WHERE id = $2', [
+                    await query('UPDATE players SET wins = $1 WHERE id = $2', [
                       numberWins + 1,
-                      user,
+                      winnerId,
                     ]);
                   }
 

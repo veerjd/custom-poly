@@ -23,8 +23,9 @@ module.exports = {
       } else {
         userId = args[1].substring(2, 20);
       }
-      const user = (await query('SELECT * FROM users WHERE id = $1', [userId]))
-        .rows[0];
+      const user = (
+        await query('SELECT * FROM players WHERE user_id = $1', [userId])
+      ).rows[0];
 
       returnMsg += `**${user.name}'s Profile**\n__In-game name:__ ${user.game_name}\n__Games played:__ ${user.games}\n__Wins:__ ${user.wins}\n\n*Games ${user.name} is currently in:*`;
 
@@ -36,7 +37,7 @@ module.exports = {
       ).rows;
       for (const game of allGames) {
         if (
-          game.player_ids.includes(userId) &&
+          game.player_ids.includes(user.id) &&
           (game.status === 'open' || game.status === 'ongoing')
         ) {
           returnMsg += `\n${game.structure} game ${game.id} `;

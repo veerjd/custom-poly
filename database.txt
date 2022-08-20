@@ -1,5 +1,6 @@
-Users table:
-    id PK (Discord user id)
+Players table:
+    id PK 
+    user_id (Discord user id)
     name (server nickname)
     game_name (in-game name)
     games (total games played)
@@ -10,7 +11,7 @@ Games table:
     structure
     status (open | ongoing | complete | deleted)
     name
-    host (User id)
+    host (player id)
     teams (number of)
     players (number per team)
 
@@ -18,4 +19,4 @@ Teams table:
     id
     game_id
     name (either a single capital letter or the player's name)
-    player_ids []
+    player_ids [] (player id)

@@ -19,10 +19,21 @@ module.exports = {
     const playerNames = [];
     for (const id of playerIds) {
       playerNames.push(
-        await db.query('SELECT name FROM users WHERE id = $1', [id]).rows[0]
+        await db.query('SELECT name FROM players WHERE id = $1', [id]).rows[0]
           .name
       );
     }
     return playerNames;
   },
+  getUserIds: async (gameId) => {
+    const playerIds = await this.getPlayerIds(gameId);
+    const userIds = [];
+    for (const id of playerIds) {
+      userIds.push(
+        await db.query('SELECT user_id FROM players WHERE id = $1', [id]).rows[0]
+          .name
+      );
+    }
+    return userIds;
+  }
 };
