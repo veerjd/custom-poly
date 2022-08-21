@@ -19,7 +19,7 @@ module.exports = {
     const userIds = [];
     for (const id of playerIds) {
       userIds.push(
-        await query('SELECT user_id FROM players WHERE id = $1', [id]).rows[0]
+        (await query('SELECT user_id FROM players WHERE id = $1', [id])).rows[0]
           .user_id
       );
     }

@@ -36,7 +36,8 @@ module.exports = {
             }
 
             const hostId = (await query('SELECT user_id FROM players WHERE id = $1', [game.host])).rows[0].user_id;
-            returnMsg += `:__ ${game.structure} hosted by <@${hostId}>`;
+            const hostTag = message.client.users.cache.get(hostId).tag;
+            returnMsg += `:__ ${game.structure}, hosted by ${hostTag}`;
           }
           returnMsg += '\n\n*Ongoing games cannot be joined.*';
         }
@@ -54,7 +55,8 @@ module.exports = {
           returnMsg = '**Open Games**';
           for (const game of games) {
             const hostId = (await query('SELECT user_id FROM players WHERE id = $1', [game.host])).rows[0].user_id;
-            returnMsg += `\n__Game ${game.id}:__ ${game.structure} hosted by <@${hostId}>`;
+            const hostTag = message.client.users.cache.get(hostId).tag;
+            returnMsg += `\n__Game ${game.id}:__ ${game.structure}, hosted by ${hostTag}`;
           }
           returnMsg +=
             '\n\n*You can join one of these games with the `!join` command.*';

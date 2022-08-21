@@ -32,7 +32,6 @@ module.exports = {
           size = 0;
         }
         if (struc) {
-          let game;
           const gameId =
             (await query('SELECT id FROM games', [])).rows.reduce(
               ((prevValue, curValue) => {
@@ -41,14 +40,12 @@ module.exports = {
                 return prevValue;
               }), { id: 0 }
             ).id + 1;
-          // eslint-disable-next-line no-console
-          console.log(gameId + ' ' + typeof gameId);
 
           switch (struc) {
             case 'werewolf':
             case 'werewolves':
               if (size) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Werewolf\', \'open\', \'unnamed\', $2, 1, $3)',
                   [gameId, playerId, size]
                 );
@@ -61,7 +58,7 @@ module.exports = {
             case 'bang':
             case 'bang!':
               if (size && size > 4) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Bang!\', \'open\', \'unnamed\', $2, 1, $3)',
                   [gameId, playerId, size]
                 );
@@ -76,7 +73,7 @@ module.exports = {
             case 'game_of_thrones':
             case 'got':
               if (size) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Game of Thrones\', \'open\', \'unnamed\', $2, 1, $3)',
                   [gameId, playerId, size]
                 );
@@ -89,7 +86,7 @@ module.exports = {
             case 'zombie':
             case 'zombies':
               if (size) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Zombies\', \'open\', \'unnamed\', $2, 1, $3)',
                   [gameId, playerId, size]
                 );
@@ -103,12 +100,12 @@ module.exports = {
             case 'wheres-waldo':
             case 'wheres_waldo':
               if (size && size === 3) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Where\'s Waldo?\', \'open\', \'unnamed\', $2, 1, 3)',
                   [gameId, playerId]
                 );
               } else {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Where\'s Waldo?\', \'open\', \'unnamed\', $2, 1, 2)',
                   [gameId, playerId]
                 );
@@ -117,7 +114,7 @@ module.exports = {
             case 'traitor':
             case 'traitors':
               if (size) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Traitor\', \'open\', \'unnamed\', $2, 2, $3)',
                   [gameId, playerId, size]
                 );
@@ -129,7 +126,7 @@ module.exports = {
               break;
             case 'ffa':
               if (size) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'FFA\', \'open\', \'unnamed\', $2, 1, $3)',
                   [gameId, playerId, size]
                 );
@@ -142,7 +139,7 @@ module.exports = {
             case 'teams':
             case 'teamgame':
               if (size) {
-                game = await query(
+                await query(
                   'INSERT INTO games VALUES ($1, \'Teams\', \'open\', \'unnamed\', $2, $3, $4)',
                   [gameId, playerId, size.substring(0, 1), size.substring(1, 2)]
                 );
@@ -155,20 +152,20 @@ module.exports = {
             case 'towerdefense':
             case 'tower-defense':
             case 'tower_defense':
-              game = await query(
+              await query(
                 'INSERT INTO games VALUES ($1, \'Tower Defense\', \'open\', \'unnamed\', $2, 1, 4)',
                 [gameId, playerId]
               );
               break;
             case 'powerbender':
-              game = await query(
+              await query(
                 'INSERT INTO games VALUES ($1, \'Powerbender\', \'open\', \'unnamed\', $2, 1, 2)',
                 [gameId, playerId]
               );
               break;
             case 'makebelieve':
             case 'make-believe':
-              game = await query(
+              await query(
                 'INSERT INTO games VALUES ($1, \'Make-Believe\', \'open\', \'unnamed\', $2, 1, 7)',
                 [gameId, playerId]
               );
@@ -179,6 +176,7 @@ module.exports = {
               ];
           }
 
+          const game = (await query('SELECT * FROM games WHERE id = $1', [gameId])).rows[0];
           returnMsg += `Successfully created ${game.structure} game ${gameId}.\nJoined you to game ${gameId}`;
 
           if (game.teams > 1) {

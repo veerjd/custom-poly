@@ -30,7 +30,7 @@ module.exports = {
 
       if (game && gameInfo) {
         if (players.includes(userId) || mod) {
-          if (gameInfo.status === 'open' || gameInfo.status === 'ongoing') {
+          if (gameInfo.status === 'ongoing') {
             await query('UPDATE games SET name = $1 WHERE id = $2', [
               gameName,
               game,
@@ -41,11 +41,21 @@ module.exports = {
               returnMsg = `Game ${game} has been renamed to ${gameName}.`;
             }
           } else {
-            const returnStatement =
-              gameInfo.status === 'completed'
-                ? 'already finished'
-                : 'been deleted';
-            returnMsg = `Game ${game} has ${returnStatement}, it cannot be renamed.`;
+            let returnStatement;
+            switch (gameInfo.status) {
+              case 'completed':
+                returnStatement = 'has already finished';
+                break;
+              case 'deleted':
+                returnStatement = 'has been deleted';
+                break;
+              case 'open':
+                returnStatement = 'has not started yet';
+                break;
+              default:
+                returnStatement = 'broke the database :( ';
+            }
+            returnMsg = `Game ${game} ${returnStatement}, it cannot be named or renamed.`;
           }
         } else {
           returnMsg = `You are not in game ${game}.`;

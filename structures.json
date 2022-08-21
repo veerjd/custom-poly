@@ -46,7 +46,7 @@
   },
   {
     "mode": "FFA",
-    "description": "FFA with speciied number of people."
+    "description": "FFA with specified number of people."
   },
   {
     "mode": "Teams",

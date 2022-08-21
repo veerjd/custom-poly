@@ -1,6 +1,7 @@
 const { query } = require('../db');
 const { startGame } = require('../methods/start-game');
 const { getLastTeam, nextTeamId } = require('../methods/last-team');
+const { getPlayerIds } = require('../methods/get-players');
 
 module.exports = {
   name: 'join',
@@ -52,105 +53,112 @@ module.exports = {
             returnMsg =
               'You must be a customizer to join this game. Ask a mod for the role.';
           } else {
-            const teams = (
-              await query('SELECT * FROM teams WHERE game_id = $1', [game])
-            ).rows;
-            const newTeamId = nextTeamId();
+            const players = await getPlayerIds(game);
+            if (!players.includes(playerId)) {
+              const teams = (
+                await query('SELECT * FROM teams WHERE game_id = $1', [game])
+              ).rows;
+              const newTeamId = await nextTeamId();
 
-            if (teams) {
-              if (gameInfo.teams === 1) {
-                gameInfo.teams = gameInfo.players;
-                gameInfo.players = 1;
-              }
+              if (teams) {
+                if (gameInfo.teams === 1) {
+                  gameInfo.teams = gameInfo.players;
+                  gameInfo.players = 1;
+                }
 
-              let lastTeam = getLastTeam(game);
-              let filledSlots = lastTeam.player_ids.length;
+                let lastTeam = await getLastTeam(game);
+                let filledSlots = lastTeam.player_ids.length;
 
-              if (
-                filledSlots >= gameInfo.players &&
-                teams.length < gameInfo.teams
-              ) {
-                if (gameInfo.players > 1) {
-                  const lastTeamName = lastTeam.name;
-                  const newTeamName = String.fromCharCode(
-                    lastTeamName.charCodeAt(0) + 1
-                  );
-                  lastTeam = await query(
-                    'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                    [newTeamId, game, newTeamName, [playerId]]
-                  );
+                if (
+                  filledSlots >= gameInfo.players &&
+                  teams.length < gameInfo.teams
+                ) {
+                  if (gameInfo.players > 1) {
+                    const lastTeamName = lastTeam.name;
+                    const newTeamName = String.fromCharCode(
+                      lastTeamName.charCodeAt(0) + 1
+                    );
+                    await query(
+                      'INSERT INTO teams VALUES ($1, $2, $3, $4)',
+                      [newTeamId, game, newTeamName, [playerId]]
+                    );
+                  } else {
+                    await query(
+                      'INSERT INTO teams VALUES ($1, $2, $3, $4)',
+                      [newTeamId, game, userName, [playerId]]
+                    );
+                  }
+                  lastTeam = (await query('SELECT * FROM teams WHERE id = $1', [newTeamId])).rows[0];
                 } else {
-                  lastTeam = await query(
-                    'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                    [newTeamId, game, userName, [playerId]]
+                  lastTeam.player_ids.push(playerId);
+                  await query('UPDATE teams SET player_ids = $1 WHERE id = $2', [
+                    lastTeam.player_ids,
+                    lastTeam.id,
+                  ]);
+                }
+
+                returnMsg = `Successfully joined you to game ${game}`;
+                if (gameInfo.players > 1) {
+                  returnMsg += ` on team ${lastTeam.name}.`;
+                } else {
+                  returnMsg += '.';
+                }
+
+                filledSlots = lastTeam.player_ids.length;
+
+                if (
+                  teams.length === gameInfo.teams &&
+                  gameInfo.players === filledSlots
+                ) {
+                  const gameInfo2 = (
+                    await query(
+                      'SELECT structure, host FROM games WHERE id = $1',
+                      [game]
+                    )
+                  ).rows[0];
+                  const gameHostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo2.host])).rows[0].user_id;
+
+                  startGame(game, gameInfo2.structure, message.guild);
+                  await query(
+                    'UPDATE games SET status = `ongoing` WHERE id = $1',
+                    [game]
                   );
+
+                  returnMsg += `\nGame ${game} has filled. <@${gameHostId}> can now start the game. `;
+                  returnMsg += `Do \`!game ${game}\` to see the game details or \`!name ${game}\` to name the game.`;
                 }
               } else {
-                lastTeam.player_ids.push(playerId);
-                await query(
-                  'UPDATE team SET player_ids = $1 WHERE id = $2',
-                  [lastTeam.player_ids, lastTeam.id]
-                );
+                returnMsg = `Joined you to game ${game}`;
+                if (gameInfo.teams > 1) {
+                  await query('INSERT INTO teams VALUES ($1, $2, `A`, $3)', [
+                    newTeamId,
+                    game,
+                    [playerId],
+                  ]);
+                  returnMsg += ' on team A.';
+                } else {
+                  await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+                    newTeamId,
+                    game,
+                    userName,
+                    [playerId],
+                  ]);
+                  returnMsg += '.';
+                }
               }
 
-              returnMsg = `Successfully joined you to game ${game}`;
-              if (gameInfo.players > 1) {
-                returnMsg += ` on team ${lastTeam.name}.`;
-              } else {
-                returnMsg += '.';
-              }
-
-              filledSlots = lastTeam.player_ids.length;
-
-              if (
-                teams.length === gameInfo.teams &&
-                gameInfo.players === filledSlots
-              ) {
-                const gameInfo2 = (
-                  await query(
-                    'SELECT structure, host FROM games WHERE id = $1',
-                    [game]
-                  )
-                ).rows[0];
-
-                startGame(game, gameInfo2.structure, message.guild.id);
-                await query(
-                  'UPDATE games SET status = `ongoing` WHERE id = $1',
-                  [game]
-                );
-
-                returnMsg += `\nGame ${game} has filled. <@${gameInfo2.host}> can now start the game. `;
-                returnMsg += `Do \`!game ${game}\` to see the game details or \`!name ${game}\` to name the game.`;
-              }
-            } else {
-              returnMsg = `Joined you to game ${game}`;
-              if (gameInfo.teams > 1) {
-                await query('INSERT INTO teams VALUES ($1, $2, `A`, $3)', [
-                  newTeamId,
-                  game,
-                  [playerId],
-                ]);
-                returnMsg += ' on team A.';
-              } else {
-                await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
-                  newTeamId,
-                  game,
-                  userName,
-                  [playerId],
-                ]);
-                returnMsg += '.';
-              }
-            }
-
-            const numberGames = (
-              await query('SELECT games FROM players WHERE id = $1', [
+              const numberGames = (
+                await query('SELECT games FROM players WHERE id = $1', [
+                  playerId,
+                ])
+              ).rows[0].games;
+              await query('UPDATE players SET games = $1 WHERE id = $2', [
+                numberGames + 1,
                 playerId,
-              ])
-            ).rows[0].games;
-            await query('UPDATE players SET games = $1 WHERE id = $2', [
-              numberGames + 1,
-              playerId,
-            ]);
+              ]);
+            } else {
+              returnMsg = `You are already in game ${game}.`;
+            }
           }
         } else {
           returnMsg = `Game ${game} is not open and cannot be joined.`;

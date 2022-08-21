@@ -6,7 +6,7 @@ const { createChannel } = require('./create-channel');
 const { sendDm } = require('../index');
 
 module.exports = {
-  startGame: async (game, structure, guildId) => {
+  startGame: async (game, structure, guild) => {
     const players = getPlayerIds(game);
     const userIds = getUserIds(game);
     const gameInfo = (await query('SELECT * FROM games WHERE id = $1', [game]))
@@ -22,15 +22,16 @@ module.exports = {
       });
     });
     playerPerms.push({
-      id: guildId,
+      id: guild.id,
       deny: [Permissions.FLAGS.VIEW_CHANNEL],
     });
 
     let gameChannel;
     if (!gameInfo.structure.includes('Traitor')) {
       gameChannel = createChannel(
+        guild,
         `game-${game}-${structure}`,
-        'Ongoing Games',
+        'Ongoing games',
         playerPerms
       );
       gameChannel.send(
@@ -54,12 +55,13 @@ module.exports = {
           });
         });
         teamPerms.push({
-          id: guildId,
+          id: guild.id,
           deny: [Permissions.FLAGS.VIEW_CHANNEL],
         });
         const teamChannel = createChannel(
+          guild,
           `game-${game}-side-${team.name}`,
-          'Ongoing Games',
+          'Ongoing games',
           teamPerms
         );
         teamChannel.send(
@@ -119,10 +121,15 @@ module.exports = {
         });
       });
       wolvesPerms.push({
-        id: guildId,
+        id: guild.id,
         deny: [Permissions.FLAGS.VIEW_CHANNEL],
       });
-      createChannel(`game-${game}-ww-only`, 'Ongoing Games', wolvesPerms).send(
+      createChannel(
+        guild,
+        `game-${game}-ww-only`,
+        'Ongoing games',
+        wolvesPerms
+      ).send(
         `This is the channel for the werewolves in game ${game}. Wolves: ` +
           wolves.forEach((userId) => `<@${userId}> `) +
           '\nDo `!game` to see a full list of players.'

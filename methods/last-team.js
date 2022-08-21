@@ -4,7 +4,6 @@ module.exports = {
   getLastTeam: async (game) => {
     const teams = (await query('SELECT * FROM teams WHERE game_id = $1', [game]))
       .rows;
-    console.log(teams);
     const lastTeam = teams.reduce(
       (prevValue, curValue) => {
         if (!prevValue || !prevValue.id) return curValue;

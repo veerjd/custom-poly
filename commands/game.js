@@ -41,14 +41,15 @@ module.exports = {
           }
 
           const hostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo.host])).rows[0].user_id;
+          const hostTag = message.client.users.cache.get(hostId).tag;
           returnMsg += `__**\nGame mode: ${gameInfo.structure} \nThis game `;
           if (
             gameInfo.status === 'completed' ||
             gameInfo.status === 'deleted'
           ) {
-            returnMsg += `was ${gameInfo.status}, and it was hosted by <@${hostId}>.`;
+            returnMsg += `was ${gameInfo.status}, and it was hosted by ${hostTag}.`;
           } else {
-            returnMsg += `is ${gameInfo.status} and hosted by <@${hostId}>.`;
+            returnMsg += `is ${gameInfo.status} and hosted by ${hostTag}.`;
           }
 
           if (gameInfo.teams === 1) {
