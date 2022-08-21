@@ -13,9 +13,13 @@
     "comma-style": "error",
     "dot-location": ["error", "property"],
     "handle-callback-err": "off",
-    "indent": ["error", 2, {
+    "indent": [
+      "error",
+      2,
+      {
         "SwitchCase": 1
-      }],
+      }
+    ],
     "max-nested-callbacks": [
       "error",
       {
@@ -28,12 +32,7 @@
         "max": 2
       }
     ],
-    "no-console": [
-      "error",
-      {
-        "allow": ["warn", "error"]
-      }
-    ],
+    "no-console": "off",
     // "no-empty-function": "warn",
     "no-floating-decimal": "error",
     "no-multi-spaces": "error",

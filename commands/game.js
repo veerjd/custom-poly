@@ -1,5 +1,5 @@
 const { query } = require('../db.js');
-const getPlayerIds = require('../methods/get-players');
+const { getPlayerIds } = require('../methods/get-players');
 
 module.exports = {
   name: 'game',
@@ -21,7 +21,7 @@ module.exports = {
       const game = args[1];
       const gameInfo = (
         await query(
-          'SELECT structure, status, name, host FROM games WHERE id = $1',
+          'SELECT structure, status, name, host, teams FROM games WHERE id = $1',
           [game]
         )
       ).rows[0];
@@ -37,23 +37,21 @@ module.exports = {
 
           returnMsg += `**__Game ${game}`;
           if (gameInfo.name !== 'unnamed') {
-            returnMsg.push(`: ${gameInfo.name}`);
+            returnMsg += `: ${gameInfo.name}`;
           }
+
+          const hostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo.host])).rows[0].user_id;
           returnMsg += `__**\nGame mode: ${gameInfo.structure} \nThis game `;
           if (
             gameInfo.status === 'completed' ||
             gameInfo.status === 'deleted'
           ) {
-            returnMsg.push(
-              `was ${gameInfo.status}, and it was hosted by <@${gameInfo.host}>.`
-            );
+            returnMsg += `was ${gameInfo.status}, and it was hosted by <@${hostId}>.`;
           } else {
-            returnMsg.push(
-              `is ${gameInfo.status} and hosted by <@${gameInfo.host}>.`
-            );
+            returnMsg += `is ${gameInfo.status} and hosted by <@${hostId}>.`;
           }
 
-          if (teams.length === players.length) {
+          if (gameInfo.teams === 1) {
             returnMsg += '\n';
             for (const playerId of players) {
               const playerInfo = (
@@ -62,7 +60,7 @@ module.exports = {
                   [playerId]
                 )
               ).rows[0];
-              returnMsg += `\n**${playerInfo.name}** - *${playerInfo.gameName}*`;
+              returnMsg += `\n**${playerInfo.name}** - *${playerInfo.game_name}*`;
             }
           } else {
             let playerIds = [];
@@ -76,7 +74,7 @@ module.exports = {
                     [playerIds[0]]
                   )
                 ).rows[0];
-                returnMsg.push(`\n\t${player.name} - *${player.game_name}*`);
+                returnMsg += `\n\t${player.name} - *${player.game_name}*`;
                 playerIds.shift();
               }
             }

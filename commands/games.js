@@ -28,13 +28,15 @@ module.exports = {
         if (games.length === 0) {
           returnMsg = 'There are currently no ongoing games.';
         } else {
-          returnMsg = '**__Ongoing Games__**';
+          returnMsg = '**Ongoing Games**';
           for (const game of games) {
             returnMsg += `\n__Game ${game.id}`;
             if (game.name !== 'unnamed') {
               returnMsg += `, *${game.name}`;
             }
-            returnMsg += `:__ ${game.structure} hosted by <@${game.host}>`;
+
+            const hostId = (await query('SELECT user_id FROM players WHERE id = $1', [game.host])).rows[0].user_id;
+            returnMsg += `:__ ${game.structure} hosted by <@${hostId}>`;
           }
           returnMsg += '\n\n*Ongoing games cannot be joined.*';
         }
@@ -49,9 +51,10 @@ module.exports = {
         if (games.length === 0) {
           returnMsg = 'There are currently no open games.';
         } else {
-          returnMsg = '**__Open Games__**';
+          returnMsg = '**Open Games**';
           for (const game of games) {
-            returnMsg += `\n__Game ${game.id}:__ ${game.structure} hosted by <@${game.host}>`;
+            const hostId = (await query('SELECT user_id FROM players WHERE id = $1', [game.host])).rows[0].user_id;
+            returnMsg += `\n__Game ${game.id}:__ ${game.structure} hosted by <@${hostId}>`;
           }
           returnMsg +=
             '\n\n*You can join one of these games with the `!join` command.*';

@@ -25,8 +25,8 @@ module.exports = {
         ])
       ).rows[0];
       if (game && gameInfo) {
-        const userIds = await getUserIds(game);
         const playerIds = await getPlayerIds(game);
+        const userIds = await getUserIds(playerIds);
         if (userIds.includes(message.author.id) || mod) {
           switch (gameInfo.status) {
             case 'open':

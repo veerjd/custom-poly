@@ -15,24 +15,12 @@ module.exports = {
     }
     return players;
   },
-  getPlayers: async (gameId) => {
-    const playerIds = await this.getPlayerIds(gameId);
-    const playerNames = [];
-    for (const id of playerIds) {
-      playerNames.push(
-        await query('SELECT name FROM players WHERE id = $1', [id]).rows[0]
-          .name
-      );
-    }
-    return playerNames;
-  },
-  getUserIds: async (gameId) => {
-    const playerIds = await this.getPlayerIds(gameId);
+  getUserIds: async (playerIds) => {
     const userIds = [];
     for (const id of playerIds) {
       userIds.push(
         await query('SELECT user_id FROM players WHERE id = $1', [id]).rows[0]
-          .name
+          .user_id
       );
     }
     return userIds;

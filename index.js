@@ -86,7 +86,7 @@ bot.on('messageCreate', async (message) => {
     // EXECUTE COMMAND
     const replyObj = await command.execute(
       message,
-      message.member.permissions.has('MANAGE_GUILD')
+      message.member.permissions.has('MANAGE_CHANNELS')
     );
 
     /* replyObj.content.forEach(async (other) => {

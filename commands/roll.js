@@ -17,10 +17,11 @@ module.exports = {
     try {
       const size = args[1];
       if (size) {
-        if (Number.isSafeInteger(size)) {
-          const roll = Math.floor(Math.random() * size) + 1;
+        try {
+          const dieSize = parseInt(size);
+          const roll = Math.floor(Math.random() * dieSize) + 1;
           returnMsg = `*You rolled:* ${roll}`;
-        } else {
+        } catch {
           returnMsg = `${size} is an invalid die size.`;
         }
       } else {
