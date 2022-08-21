@@ -20,7 +20,7 @@ module.exports = {
       if (['ongoing', 'running', 'inprogress'].includes(args[1])) {
         const games = (
           await query(
-            'SELECT id, structure, name, host FROM games WHERE status = "ongoing"',
+            'SELECT id, structure, name, host FROM games WHERE status = \'ongoing\'',
             []
           )
         ).rows;
@@ -41,7 +41,7 @@ module.exports = {
       } else {
         const games = (
           await query(
-            'SELECT id, structure, host FROM games WHERE status = "open"',
+            'SELECT id, structure, host FROM games WHERE status = \'open\'',
             []
           )
         ).rows;
