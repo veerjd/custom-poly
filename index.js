@@ -50,15 +50,14 @@ bot.on('messageCreate', async (message) => {
 
     // If it's a DM
     if (message.channel.type === 'dm') {
-      const logMsg = [];
-      logMsg.push(`Content: ${message.content}`);
-      logMsg.push(`DM from ${message.author}(${message.author.username})`);
-      logMsg.push('<@217385992837922819> <@776656382010458112>');
-
       message.channel
         .send('I do not support DM commands.')
         .catch(console.error);
-      return logChannel.send(logMsg).catch(console.error);
+      return logChannel
+        .send(
+          `**${message.cleanContent}** by @${message.author.tag} in my DMs\n<@776656382010458112>`
+        )
+        .catch(console.error);
     }
 
     const textStr = message.cleanContent.slice(prefix.length);
@@ -107,7 +106,7 @@ bot.on('messageCreate', async (message) => {
     console.log(error);
     if (error.stack && logChannel instanceof TextChannel) {
       await logChannel.send(
-        `**${message.cleanContent}** by ${message.author} (@${message.author.tag})\n${error}\n${message.url}`
+        `**${message.cleanContent}** by @${message.author.tag}\n${error}\n${message.url}\n<@776656382010458112>`
       );
     }
     if (message.channel !== logChannel) {

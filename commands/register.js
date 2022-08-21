@@ -25,7 +25,11 @@ module.exports = {
       if (existingUser.length === 0) {
         const userGameName = args[1];
         if (userGameName || mod) {
-          const userName = message.member.nickname;
+          let userName = message.member.nickname;
+          if (!userName) {
+            userName = message.member.user.username;
+          }
+
           const playerId =
             (await query('SELECT id FROM players', [])).rows.reduce(
               (prevValue, curValue) => {
@@ -49,7 +53,12 @@ module.exports = {
       } else {
         const playerId = existingUser[0].id;
         const userGameName = args[1];
-        const userName = message.member.nickname;
+
+        let userName = message.member.nickname;
+        if (!userName) {
+          userName = message.member.user.username;
+        }
+
         if (userGameName || mod) {
           await query(
             'UPDATE players SET name = $1, game_name = $2 WHERE id = $3',

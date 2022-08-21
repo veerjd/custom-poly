@@ -1,4 +1,4 @@
-const db = require('../db.js');
+const { query } = require('../db.js');
 const getPlayerIds = require('../methods/get-players');
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
     try {
       const game = args[1];
       const gameInfo = (
-        await db.query(
+        await query(
           'SELECT structure, status, name, host FROM games WHERE id = $1',
           [game]
         )
@@ -29,7 +29,7 @@ module.exports = {
         if (gameInfo.status !== 'deleted') {
           const players = await getPlayerIds(game);
           const teams = (
-            await db.query(
+            await query(
               'SELECT name, player_ids FROM teams WHERE game_id = $1',
               [game]
             )
@@ -57,7 +57,7 @@ module.exports = {
             returnMsg += '\n';
             for (const playerId of players) {
               const playerInfo = (
-                await db.query(
+                await query(
                   'SELECT name, game_name FROM players WHERE id = $1',
                   [playerId]
                 )
@@ -71,7 +71,7 @@ module.exports = {
               playerIds = team.player_ids;
               while (playerIds.length > 0) {
                 const player = (
-                  await db.query(
+                  await query(
                     'SELECT name, game_name FROM players WHERE id = $1',
                     [playerIds[0]]
                   )

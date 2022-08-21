@@ -1,4 +1,4 @@
-const db = require('../db');
+const { query } = require('../db');
 
 module.exports = {
   name: 'games',
@@ -19,35 +19,43 @@ module.exports = {
     try {
       if (['ongoing', 'running', 'inprogress'].includes(args[1])) {
         const games = (
-          await db.query(
-            'SELECT id, structure, name, host FROM games WHERE status = `ongoing`',
+          await query(
+            'SELECT id, structure, name, host FROM games WHERE status = "ongoing"',
             []
           )
         ).rows;
 
-        returnMsg = '**__Ongoing Games__**';
-        for (const game of games) {
-          returnMsg += `\n__Game ${game.id}`;
-          if (game.name !== 'unnamed') {
-            returnMsg += `, *${game.name}`;
+        if (games.length === 0) {
+          returnMsg = 'There are currently no ongoing games.';
+        } else {
+          returnMsg = '**__Ongoing Games__**';
+          for (const game of games) {
+            returnMsg += `\n__Game ${game.id}`;
+            if (game.name !== 'unnamed') {
+              returnMsg += `, *${game.name}`;
+            }
+            returnMsg += `:__ ${game.structure} hosted by <@${game.host}>`;
           }
-          returnMsg += `:__ ${game.structure} hosted by <@${game.host}>`;
+          returnMsg += '\n\n*Ongoing games cannot be joined.*';
         }
-        returnMsg += '\n\n*Ongoing games cannot be joined.*';
       } else {
         const games = (
-          await db.query(
-            'SELECT id, structure, host FROM games WHERE status = `open`',
+          await query(
+            'SELECT id, structure, host FROM games WHERE status = "open"',
             []
           )
         ).rows;
 
-        returnMsg = '**__Open Games__**';
-        for (const game of games) {
-          returnMsg += `\n__Game ${game.id}:__ ${game.structure} hosted by <@${game.host}>`;
+        if (games.length === 0) {
+          returnMsg = 'There are currently no open games.';
+        } else {
+          returnMsg = '**__Open Games__**';
+          for (const game of games) {
+            returnMsg += `\n__Game ${game.id}:__ ${game.structure} hosted by <@${game.host}>`;
+          }
+          returnMsg +=
+            '\n\n*You can join one of these games with the `!join` command.*';
         }
-        returnMsg +=
-          '\n\n*You can join one of these games with the `!join` command.*';
       }
     } catch (error) {
       throw error;

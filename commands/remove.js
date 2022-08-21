@@ -118,7 +118,7 @@ module.exports = {
               returnMsg = `That player is not in game ${game}.`;
             }
           } else {
-            returnMsg = 'That player is not registered with the bot.';
+            returnMsg = 'That player is not registered with me.';
           }
         } else {
           returnMsg = 'You do not have permission to run this command.';

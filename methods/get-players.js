@@ -1,14 +1,15 @@
-const { db } = require('../db');
+/* eslint-disable no-console */
+const { query } = require('../db');
 
 module.exports = {
   getPlayerIds: async (gameId) => {
-    const returned = await db.query(
+    const returned = await query(
       'SELECT player_ids FROM teams WHERE game_id = $1',
       [gameId]
-    ).rows;
+    );
     const players = [];
-    for (const row of returned) {
-      for (const player of row) {
+    for (const row of returned.rows) {
+      for (const player of row.player_ids) {
         players.push(player);
       }
     }
@@ -19,7 +20,7 @@ module.exports = {
     const playerNames = [];
     for (const id of playerIds) {
       playerNames.push(
-        await db.query('SELECT name FROM players WHERE id = $1', [id]).rows[0]
+        await query('SELECT name FROM players WHERE id = $1', [id]).rows[0]
           .name
       );
     }
@@ -30,7 +31,7 @@ module.exports = {
     const userIds = [];
     for (const id of playerIds) {
       userIds.push(
-        await db.query('SELECT user_id FROM players WHERE id = $1', [id]).rows[0]
+        await query('SELECT user_id FROM players WHERE id = $1', [id]).rows[0]
           .name
       );
     }

@@ -116,7 +116,7 @@ module.exports = {
           }
         } else {
           returnMsg =
-            'You are not registered with the bot. Do `!help register` for more information.';
+            'You are not registered with me. Do `!help register` for more information.';
         }
       } else {
         if (game) {

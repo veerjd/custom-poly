@@ -1,4 +1,4 @@
-const db = require('../db.js');
+const { query } = require('../db.js');
 const { getUserIds, getPlayerIds } = require('../methods/get-players');
 
 module.exports = {
@@ -20,7 +20,7 @@ module.exports = {
     try {
       const game = args[1];
       const gameInfo = (
-        await db.query('SELECT structure, status FROM games WHERE id = $1', [
+        await query('SELECT structure, status FROM games WHERE id = $1', [
           game,
         ])
       ).rows[0];
@@ -31,7 +31,7 @@ module.exports = {
           switch (gameInfo.status) {
             case 'open':
             case 'ongoing':
-              await db.query(
+              await query(
                 'UPDATE games SET status = \'deleted\' WHERE id = $1',
                 [game]
               );
@@ -41,11 +41,11 @@ module.exports = {
                 const playerId = playerIds[i];
                 returnMsg += ` <@${userId}>`;
                 const numberGames = (
-                  await db.query('SELECT games FROM players WHERE id = $1', [
+                  await query('SELECT games FROM players WHERE id = $1', [
                     playerId,
                   ])
                 ).rows[0].games;
-                await db.query('UPDATE players SET games = $1 WHERE id = $2', [
+                await query('UPDATE players SET games = $1 WHERE id = $2', [
                   numberGames - 1,
                   playerId,
                 ]);

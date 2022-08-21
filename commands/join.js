@@ -1,4 +1,4 @@
-const db = require('../db');
+const { query } = require('../db');
 const { startGame } = require('../methods/start-game');
 const { getLastTeam, nextTeamId } = require('../methods/last-team');
 
@@ -21,7 +21,7 @@ module.exports = {
     try {
       const game = args[1];
       const gameInfo = (
-        await db.query(
+        await query(
           'SELECT structure, status, teams, players FROM games WHERE id = $1',
           [game]
         )
@@ -31,7 +31,7 @@ module.exports = {
       let userName, playerId;
       try {
         const returned = (
-          await db.query('SELECT id, name FROM players WHERE user_id = $1', [
+          await query('SELECT id, name FROM players WHERE user_id = $1', [
             userId,
           ])
         ).rows[0];
@@ -53,7 +53,7 @@ module.exports = {
               'You must be a customizer to join this game. Ask a mod for the role.';
           } else {
             const teams = (
-              await db.query('SELECT * FROM teams WHERE game_id = $1', [game])
+              await query('SELECT * FROM teams WHERE game_id = $1', [game])
             ).rows;
             const newTeamId = nextTeamId();
 
@@ -75,19 +75,19 @@ module.exports = {
                   const newTeamName = String.fromCharCode(
                     lastTeamName.charCodeAt(0) + 1
                   );
-                  lastTeam = await db.query(
+                  lastTeam = await query(
                     'INSERT INTO teams VALUES ($1, $2, $3, $4)',
                     [newTeamId, game, newTeamName, [playerId]]
                   );
                 } else {
-                  lastTeam = await db.query(
+                  lastTeam = await query(
                     'INSERT INTO teams VALUES ($1, $2, $3, $4)',
                     [newTeamId, game, userName, [playerId]]
                   );
                 }
               } else {
                 lastTeam.player_ids.push(playerId);
-                await db.query(
+                await query(
                   'UPDATE team SET player_ids = $1 WHERE id = $2',
                   [lastTeam.player_ids, lastTeam.id]
                 );
@@ -107,14 +107,14 @@ module.exports = {
                 gameInfo.players === filledSlots
               ) {
                 const gameInfo2 = (
-                  await db.query(
+                  await query(
                     'SELECT structure, host FROM games WHERE id = $1',
                     [game]
                   )
                 ).rows[0];
 
                 startGame(game, gameInfo2.structure, message.guild.id);
-                await db.query(
+                await query(
                   'UPDATE games SET status = `ongoing` WHERE id = $1',
                   [game]
                 );
@@ -125,14 +125,14 @@ module.exports = {
             } else {
               returnMsg = `Joined you to game ${game}`;
               if (gameInfo.teams > 1) {
-                await db.query('INSERT INTO teams VALUES ($1, $2, `A`, $3)', [
+                await query('INSERT INTO teams VALUES ($1, $2, `A`, $3)', [
                   newTeamId,
                   game,
                   [playerId],
                 ]);
                 returnMsg += ' on team A.';
               } else {
-                await db.query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+                await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
                   newTeamId,
                   game,
                   userName,
@@ -143,11 +143,11 @@ module.exports = {
             }
 
             const numberGames = (
-              await db.query('SELECT games FROM players WHERE id = $1', [
+              await query('SELECT games FROM players WHERE id = $1', [
                 playerId,
               ])
             ).rows[0].games;
-            await db.query('UPDATE players SET games = $1 WHERE id = $2', [
+            await query('UPDATE players SET games = $1 WHERE id = $2', [
               numberGames + 1,
               playerId,
             ]);
