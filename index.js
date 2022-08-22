@@ -32,6 +32,8 @@ bot.once('ready', () => {
   const cPId = process.env.GUILDID;
   const customPoly = bot.guilds.cache.get(cPId);
   logChannel = customPoly.channels.cache.get('684944690893946972');
+
+  bot.user.setAvatar('nature-bunny-avatar.png').catch(console.error);
 });
 
 // --------------------------------------
