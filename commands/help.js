@@ -24,7 +24,7 @@ module.exports = {
           commands.find(
             (cmnd) => cmnd.aliases && cmnd.aliases.includes(args[1])
           );
-        const prefix = process.env.prefix;
+        const prefix = process.env.PREFIX;
         if (cmd) {
           returnMsg += `__${cmd.name}__ \n${
             cmd.description
@@ -36,7 +36,7 @@ module.exports = {
           }
           returnMsg = returnMsg.substring(0, returnMsg.length - 2);
         } else {
-          returnMsg = `That command was not found. Run \`${process.env.prefix}help\` to view all of my commands.`;
+          returnMsg = `That command was not found. Run \`${prefix}help\` to view all of my commands.`;
         }
       } else {
         const categoriesMapped = {
