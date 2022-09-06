@@ -57,7 +57,7 @@ bot.on('messageCreate', async (message) => {
         .catch(console.error);
       return logChannel
         .send(
-          `**${message.cleanContent}** by @${message.author.tag} in my DMs\n<@776656382010458112>`
+          `**${message.cleanContent}** by @${message.author.tag} in my DMs`
         )
         .catch(console.error);
     }
@@ -108,7 +108,7 @@ bot.on('messageCreate', async (message) => {
     console.log(error);
     if (error.stack && logChannel instanceof TextChannel) {
       await logChannel.send(
-        `**${message.cleanContent}** by @${message.author.tag}\n${error}\n${message.url}\n<@776656382010458112>`
+        `**${message.cleanContent}** by @${message.author.tag}\n${error}\n${message.url}`
       );
     }
     if (message.channel !== logChannel) {
