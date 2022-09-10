@@ -88,7 +88,7 @@ module.exports = {
           returnMsg = `Game ${game} could not be found.`;
         } else {
           returnMsg =
-            'The `!game` command takes a game ID as an argument. Type `!help` for more information.';
+            'The `$game` command takes a game ID as an argument. Type `$help` for more information.';
         }
       }
     } catch (error) {

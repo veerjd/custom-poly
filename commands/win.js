@@ -99,7 +99,7 @@ module.exports = {
         }
       } else {
         returnMsg =
-          'The `!win` command takes a game ID as an argument. Do `!help win` for more information.';
+          'The `$win` command takes a game ID as an argument. Do `$help win` for more information.';
       }
     } catch (error) {
       throw error;

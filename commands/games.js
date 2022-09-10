@@ -59,7 +59,7 @@ module.exports = {
             returnMsg += `\n__Game ${game.id}:__ ${game.structure}, hosted by ${hostTag}`;
           }
           returnMsg +=
-            '\n\n*You can join one of these games with the `!join` command.*';
+            '\n\n*You can join one of these games with the `$join` command.*';
         }
       }
     } catch (error) {

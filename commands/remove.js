@@ -136,7 +136,7 @@ module.exports = {
           returnMsg = `Game ${game} could not be found.`;
         } else {
           returnMsg =
-            'The `!remove` command takes a game ID as an argument. Do `!help leave` for more information.';
+            'The `$remove` command takes a game ID as an argument. Do `$help remove` for more information.';
         }
       }
     } catch (error) {

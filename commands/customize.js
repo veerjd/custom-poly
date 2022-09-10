@@ -72,7 +72,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game. Do `!help open` for more information.',
+                    'You need to specify a size for your new game. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -85,7 +85,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game that is at least 5. Do `!help open` for more information.',
+                    'You need to specify a size for your new game that is at least 5. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -100,7 +100,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game. Do `!help open` for more information.',
+                    'You need to specify a size for your new game. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -113,7 +113,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game. Do `!help open` for more information.',
+                    'You need to specify a size for your new game. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -141,7 +141,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game. Do `!help open` for more information.',
+                    'You need to specify a size for your new game. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -153,7 +153,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game. Do `!help open` for more information.',
+                    'You need to specify a size for your new game. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -172,7 +172,7 @@ module.exports = {
                   );
                 } else {
                   return [
-                    'You need to specify a size for your new game. Do `!help open` for more information.',
+                    'You need to specify a size for your new game. Do `$help customize` for more information.',
                   ];
                 }
                 break;
@@ -199,7 +199,7 @@ module.exports = {
                 break;
               default:
                 return [
-                  'The `!customize` command takes a name for the new game mode and a game type as arguments. Do `!structures` to see a list of game types.',
+                  'The `$customize` command takes a name for the new game mode and a game type as arguments. Do `$structures` to see a list of game types.',
                 ];
             }
 
@@ -240,7 +240,7 @@ module.exports = {
             createChannel(message.guild, newModeLetters.join(''), 'customizers corner', []);
           } else {
             returnMsg =
-              'The `!customize` command takes a name for the new game mode and a game type as arguments. Do `!structures` to see a list of game types.';
+              'The `$customize` command takes a name for the new game mode and a game type as arguments. Do `$structures` to see a list of game types.';
           }
         } else {
           returnMsg =
@@ -248,7 +248,7 @@ module.exports = {
         }
       } else {
         returnMsg =
-          'You must be registered with me to open a game. Do `!help register` for more information.';
+          'You must be registered with me to open a game. Do `$help register` for more information.';
       }
     } catch (error) {
       throw error;

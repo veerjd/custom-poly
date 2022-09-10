@@ -119,7 +119,7 @@ module.exports = {
                   );
 
                   returnMsg += `\nGame ${game} has filled. <@${gameInfo2.host}> can now start the game. `;
-                  returnMsg += `Do \`!game ${game}\` to see the game details or \`!name ${game}\` to name the game.`;
+                  returnMsg += `Do \`$game ${game}\` to see the game details or \`$name ${game}\` to name the game.`;
                 }
               } else {
                 if (gameInfo.teams > 1) {
@@ -158,7 +158,7 @@ module.exports = {
             returnMsg = `Game ${game} could not be found.`;
           } else {
             returnMsg =
-              'The `!add` command takes a game ID and a user as arguments. Type `!help` for more information.';
+              'The `$add` command takes a game ID and a user as arguments. Type `$help` for more information.';
           }
         }
       } else {

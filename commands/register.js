@@ -48,7 +48,7 @@ module.exports = {
           returnMsg = `Successfully added you to my database with in-game name ${userGameName}.`;
         } else {
           returnMsg =
-            '`!register` takes your in-game name as an argument. Do `!help register` for more information.';
+            '`$register` takes your in-game name as an argument. Do `$help register` for more information.';
         }
       } else {
         const playerId = existingUser[0].id;

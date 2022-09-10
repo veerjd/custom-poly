@@ -37,7 +37,7 @@ module.exports = {
       gameChannel.send(
         `This is the game channel for game ${game}. The game mode is ${structure}. Players: ` +
           userIds.forEach((playerId) => `<@${playerId}> `) +
-          '\nDo `!game` to see a list of teams.'
+          '\nDo `$game` to see a list of teams.'
       );
     }
 
@@ -74,7 +74,7 @@ module.exports = {
               ).rows[0].user_id;
               return `<@${userId}> `;
             }) +
-            '\nDo `!game` to see a full list of players and teams.'
+            '\nDo `$game` to see a full list of players and teams.'
         );
 
         if (gameInfo.structure.includes('Traitor')) {
@@ -132,7 +132,7 @@ module.exports = {
       ).send(
         `This is the channel for the werewolves in game ${game}. Wolves: ` +
           wolves.forEach((userId) => `<@${userId}> `) +
-          '\nDo `!game` to see a full list of players.'
+          '\nDo `$game` to see a full list of players.'
       );
     } else if (gameInfo.structure.includes('Make-Believe')) {
       const teamA = [0, 0, 0];

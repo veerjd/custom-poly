@@ -71,7 +71,7 @@ module.exports = {
           return [`Game ${game} could not be found.`];
         } else {
           return [
-            'The `!delete` command takes a game ID as an argument. Type `!help` for more information.',
+            'The `$delete` command takes a game ID as an argument. Type `$help` for more information.',
           ];
         }
       }

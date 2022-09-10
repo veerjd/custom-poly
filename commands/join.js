@@ -39,7 +39,7 @@ module.exports = {
         userName = returned.name;
         playerId = returned.id;
       } catch {
-        return ['Please register with me first using `!register`.'];
+        return ['Please register with me first using `$register`.'];
       }
 
       if (game && gameInfo) {
@@ -125,7 +125,7 @@ module.exports = {
                   );
 
                   returnMsg += `\nGame ${game} has filled. <@${gameHostId}> can now start the game. `;
-                  returnMsg += `Do \`!game ${game}\` to see the game details or \`!name ${game}\` to name the game.`;
+                  returnMsg += `Do \`$game ${game}\` to see the game details or \`$name ${game}\` to name the game.`;
                 }
               } else {
                 returnMsg = `Joined you to game ${game}`;
@@ -168,7 +168,7 @@ module.exports = {
           returnMsg = `Game ${game} could not be found.`;
         } else {
           returnMsg =
-            'The `!join` command takes a game ID as an argument. Type `!help` for more information.';
+            'The `$join` command takes a game ID as an argument. Type `$help` for more information.';
         }
       }
     } catch (error) {

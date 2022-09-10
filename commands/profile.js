@@ -58,7 +58,7 @@ module.exports = {
       } else {
         if (userId === message.author.id) {
           returnMsg =
-            'You must be registered with me to view your profile. Do `!help register` for more information.';
+            'You must be registered with me to view your profile. Do `$help register` for more information.';
         } else {
           returnMsg = 'That user is not registered with me.';
         }

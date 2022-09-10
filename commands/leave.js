@@ -121,14 +121,14 @@ module.exports = {
           }
         } else {
           returnMsg =
-            'You are not registered with me. Do `!help register` for more information.';
+            'You are not registered with me. Do `$help register` for more information.';
         }
       } else {
         if (game) {
           returnMsg = `Game ${game} could not be found.`;
         } else {
           returnMsg =
-            'The `!leave` command takes a game ID as an argument. Do `!help leave` for more information.';
+            'The `$leave` command takes a game ID as an argument. Do `$help leave` for more information.';
         }
       }
     } catch (error) {

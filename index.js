@@ -26,7 +26,7 @@ for (const file of commandFiles) {
 //
 // --------------------------------------
 bot.once('ready', () => {
-  bot.user.setActivity('!help', { type: 'PLAYING' });
+  bot.user.setActivity('$help', { type: 'PLAYING' });
   console.log(`Logged in as ${bot.user.username}`);
 
   const cPId = process.env.GUILDID;

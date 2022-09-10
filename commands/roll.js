@@ -26,7 +26,7 @@ module.exports = {
         }
       } else {
         returnMsg =
-          'The `!roll` command takes a number as an argument. Do `!help roll` for more information.';
+          'The `$roll` command takes a number as an argument. Do `$help roll` for more information.';
       }
     } catch (error) {
       throw error;

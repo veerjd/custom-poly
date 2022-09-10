@@ -51,7 +51,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your Werewolf game. Do `!help open` for more information.',
+                  'You need to specify a size for your Werewolf game. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -64,7 +64,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your Bang! game that is at least 5. Do `!help open` for more information.',
+                  'You need to specify a size for your Bang! game that is at least 5. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -79,7 +79,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your Game of Thrones game. Do `!help open` for more information.',
+                  'You need to specify a size for your Game of Thrones game. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -92,7 +92,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your Zombies game. Do `!help open` for more information.',
+                  'You need to specify a size for your Zombies game. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -120,7 +120,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your Traitor game. Do `!help open` for more information.',
+                  'You need to specify a size for your Traitor game. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -132,7 +132,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your FFA game. Do `!help open` for more information.',
+                  'You need to specify a size for your FFA game. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -145,7 +145,7 @@ module.exports = {
                 );
               } else {
                 return [
-                  'You need to specify a size for your team game. Do `!help open` for more information.',
+                  'You need to specify a size for your team game. Do `$help open` for more information.',
                 ];
               }
               break;
@@ -172,7 +172,7 @@ module.exports = {
               break;
             default:
               return [
-                'The `!open` command takes a game type as an argument. Do `!structures` to see a list of game types.',
+                'The `$open` command takes a game type as an argument. Do `$structures` to see a list of game types.',
               ];
           }
 
@@ -199,11 +199,11 @@ module.exports = {
           }
         } else {
           returnMsg =
-            'The `!open` command takes a game type as an argument. Do `!structures` to see a list of game types.';
+            'The `$open` command takes a game type as an argument. Do `$structures` to see a list of game types.';
         }
       } else {
         returnMsg =
-          'You must be registered with me to open a game. Do `!help register` for more information.';
+          'You must be registered with me to open a game. Do `$help register` for more information.';
       }
     } catch (error) {
       throw error;
