@@ -45,8 +45,8 @@ module.exports = {
         ];
       }
 
-      if (message.author.id === gameInfo.host || mod) {
-        if (game && gameInfo) {
+      if (game && gameInfo) {
+        if (message.author.id === gameInfo.host || mod) {
           if (gameInfo.status === 'open' || gameInfo.status === 'ongoing') {
             const players = await getPlayerIds(game);
             if (!players.includes(playerId)) {
@@ -73,17 +73,25 @@ module.exports = {
                     const newTeamName = String.fromCharCode(
                       lastTeamName.charCodeAt(0) + 1
                     );
-                    await query(
-                      'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                      [newTeamId, game, newTeamName, [playerId]]
-                    );
+                    await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+                      newTeamId,
+                      game,
+                      newTeamName,
+                      [playerId],
+                    ]);
                   } else {
-                    await query(
-                      'INSERT INTO teams VALUES ($1, $2, $3, $4)',
-                      [newTeamId, game, userName, [playerId]]
-                    );
+                    await query('INSERT INTO teams VALUES ($1, $2, $3, $4)', [
+                      newTeamId,
+                      game,
+                      userName,
+                      [playerId],
+                    ]);
                   }
-                  lastTeam = (await query('SELECT * FROM teams WHERE id = $1', [newTeamId])).rows[0];
+                  lastTeam = (
+                    await query('SELECT * FROM teams WHERE id = $1', [
+                      newTeamId,
+                    ])
+                  ).rows[0];
                 } else {
                   lastTeam.player_ids.push(playerId);
                   await query('UPDATE team SET player_ids = $1 WHERE id = $2', [
@@ -154,15 +162,15 @@ module.exports = {
             returnMsg = `Game ${game} is not open and players cannot be added to it.`;
           }
         } else {
-          if (game) {
-            returnMsg = `Game ${game} could not be found.`;
-          } else {
-            returnMsg =
-              'The `$add` command takes a game ID and a user as arguments. Type `$help` for more information.';
-          }
+          returnMsg = 'You do not have permission to run this command.';
         }
       } else {
-        returnMsg = 'You do not have permission to run this command.';
+        if (game) {
+          returnMsg = `Game ${game} could not be found.`;
+        } else {
+          returnMsg =
+            'The `$add` command takes a game ID and a user as arguments. Type `$help` for more information.';
+        }
       }
     } catch (error) {
       throw error;
