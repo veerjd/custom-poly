@@ -13,7 +13,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}remove\``;
   },
-  example: 'remove 10 <@776656382010458112>',
+  example: 'remove 10 @akajd',
   category: 'Games',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
