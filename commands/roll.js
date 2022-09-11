@@ -8,6 +8,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}roll\``;
   },
+  example: 'roll 6',
   category: 'Info',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],

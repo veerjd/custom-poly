@@ -11,6 +11,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}profile\``;
   },
+  example: 'profile <@776656382010458112>',
   category: 'Info',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],

@@ -11,6 +11,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}register\``;
   },
+  example: 'register myName',
   category: 'Info',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],

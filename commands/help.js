@@ -26,15 +26,18 @@ module.exports = {
           );
         const prefix = process.env.PREFIX;
         if (cmd) {
-          returnMsg += `__${cmd.name}__ \n${
+          returnMsg += `**${cmd.name}** \n${
             cmd.description
-          } \nLong form: ${cmd.longUsage(
+          } \n__Long form:__ ${cmd.longUsage(
             prefix
-          )} \nShort form: ${cmd.shortUsage(prefix)} \n**Aliases:** `;
+          )} \n__Short form:__ ${cmd.shortUsage(prefix)} \n__Aliases:__ `;
           for (const alias of cmd.aliases) {
             returnMsg += alias + ', ';
           }
           returnMsg = returnMsg.substring(0, returnMsg.length - 2);
+          if (cmd.example) {
+            returnMsg += `\n__Example usage:__ \`${prefix + cmd.example}\``;
+          }
         } else {
           returnMsg = `That command was not found. Run \`${prefix}help\` to view all of my commands.`;
         }

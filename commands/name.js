@@ -12,6 +12,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}name\``;
   },
+  example: 'name 10 Todaian War',
   category: 'Games',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],

@@ -13,6 +13,7 @@ module.exports = {
   longUsage(prefix) {
     return `\`${prefix}customize\``;
   },
+  example: 'customize great-war-of-the-square ffa 6',
   category: 'Games',
   permsAllowed: ['VIEW_CHANNEL'],
   usersAllowed: ['217385992837922819', '776656382010458112'],
