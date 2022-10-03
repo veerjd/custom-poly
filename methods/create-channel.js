@@ -16,5 +16,7 @@ module.exports = {
       return;
     }
     newChannel.setParent(cat.id);
+
+    return newChannel;
   },
 };
