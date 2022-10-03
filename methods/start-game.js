@@ -1,34 +1,34 @@
 /* Set up game channels when a game is started. */
 const { query } = require('../db');
-const { PermissionFlagsBits } = require('discord.js');
+const { Permissions } = require('discord.js');
 const { getPlayerIds, getUserIds } = require('./get-players');
 const { createChannel } = require('./create-channel');
 const { sendDm } = require('../index');
 
 module.exports = {
   startGame: async (game, structure, guild) => {
-    const players = getPlayerIds(game);
-    const userIds = getUserIds(game);
+    const players = await getPlayerIds(game);
+    const userIds = await getUserIds(players);
     const gameInfo = (await query('SELECT * FROM games WHERE id = $1', [game]))
       .rows[0];
     const teams = (
       await query('SELECT * FROM teams WHERE game_id = $1', [game])
     ).rows;
     const playerPerms = [];
-    userIds.forEach((playerId) => {
+    userIds.forEach((userId) => {
       playerPerms.push({
-        id: playerId,
-        allow: [PermissionFlagsBits.ViewChannel],
+        id: userId,
+        allow: Permissions.FLAGS.VIEW_CHANNEL,
       });
     });
     playerPerms.push({
       id: guild.id,
-      deny: [PermissionFlagsBits.ViewChannel],
+      deny: Permissions.FLAGS.VIEW_CHANNEL,
     });
 
     let gameChannel;
     if (!gameInfo.structure.includes('Traitor')) {
-      gameChannel = createChannel(
+      gameChannel = await createChannel(
         guild,
         `game-${game}-${structure}`,
         'Ongoing games',
@@ -51,12 +51,12 @@ module.exports = {
           ).rows[0].user_id;
           teamPerms.push({
             id: userId,
-            allow: [PermissionFlagsBits.ViewChannel],
+            allow: Permissions.FLAGS.VIEW_CHANNEL,
           });
         });
         teamPerms.push({
           id: guild.id,
-          deny: [PermissionFlagsBits.ViewChannel],
+          deny: Permissions.FLAGS.VIEW_CHANNEL,
         });
         const teamChannel = createChannel(
           guild,
@@ -117,12 +117,12 @@ module.exports = {
       wolves.forEach((userId) => {
         wolvesPerms.push({
           id: userId,
-          allow: [PermissionFlagsBits.ViewChannel],
+          allow: Permissions.FLAGS.VIEW_CHANNEL,
         });
       });
       wolvesPerms.push({
         id: guild.id,
-        deny: [PermissionFlagsBits.ViewChannel],
+        deny: Permissions.FLAGS.VIEW_CHANNEL,
       });
       createChannel(
         guild,

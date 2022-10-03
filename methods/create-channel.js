@@ -1,20 +1,20 @@
+const { CategoryChannel } = require('discord.js');
+
 module.exports = {
-  createChannel: (guild, channelName, categoryName, channelPerms) => {
-    return guild.channels
-      .create({
-        name: channelName,
+  createChannel: async (guild, channelName, categoryName, channelPerms) => {
+    const newChannel = await guild.channels
+      .create(channelName, {
         permissionOverwrites: channelPerms,
       })
-      .then((channel) => {
-        const cat = guild.channels.cache.find(
-          (c) => c.name == categoryName && c.type == 'category'
-        );
-        if (!cat) {
-          console.log('Category could not be found.');
-          return;
-        }
-        channel.setParent(cat.id);
-      })
       .catch(console.error);
+
+    const cat = guild.channels.cache.find(
+      (c) => c.name == categoryName
+    );
+    if (!cat) {
+      console.log('Category could not be found.');
+      return;
+    }
+    newChannel.setParent(cat.id);
   },
 };
