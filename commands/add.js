@@ -25,7 +25,7 @@ module.exports = {
       const game = args[1];
       const gameInfo = (
         await query(
-          'SELECT status, host, teams, players FROM games WHERE id = $1',
+          'SELECT structure, status, host, teams, players FROM games WHERE id = $1',
           [game]
         )
       ).rows[0];
@@ -51,7 +51,7 @@ module.exports = {
           if (gameInfo.status === 'open' || gameInfo.status === 'ongoing') {
             const players = await getPlayerIds(game);
             if (!players.includes(playerId)) {
-              const teams = (
+              let teams = (
                 await query('SELECT * FROM teams WHERE game_id = $1', [game])
               ).rows;
               const newTeamId = await nextTeamId();
@@ -93,6 +93,9 @@ module.exports = {
                       newTeamId,
                     ])
                   ).rows[0];
+                  teams = (
+                    await query('SELECT * FROM teams WHERE game_id = $1', [game])
+                  ).rows;
                 } else {
                   lastTeam.player_ids.push(playerId);
                   await query('UPDATE team SET player_ids = $1 WHERE id = $2', [
@@ -114,20 +117,15 @@ module.exports = {
                   teams.length === gameInfo.teams &&
                   gameInfo.players === filledSlots
                 ) {
-                  const gameInfo2 = (
-                    await query(
-                      'SELECT structure, host FROM games WHERE id = $1',
-                      [game]
-                    )
-                  ).rows[0];
+                  const gameHostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo.host])).rows[0].user_id;
 
-                  startGame(game, gameInfo2.structure, message.guild);
+                  startGame(game, gameInfo.structure, message.guild);
                   await query(
-                    'UPDATE games SET status = `ongoing` WHERE id = $1',
+                    'UPDATE games SET status = \'ongoing\' WHERE id = $1',
                     [game]
                   );
 
-                  returnMsg += `\nGame ${game} has filled. <@${gameInfo2.host}> can now start the game. `;
+                  returnMsg += `\nGame ${game} has filled. <@${gameHostId}> can now start the game. `;
                   returnMsg += `Do \`$game ${game}\` to see the game details or \`$name ${game}\` to name the game.`;
                 }
               } else {

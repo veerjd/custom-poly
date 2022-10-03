@@ -109,7 +109,6 @@ module.exports = {
                 }
 
                 filledSlots = lastTeam.player_ids.length;
-                returnMsg += `\nThe last team has ${filledSlots} people. There are ${teams.length} teams out of ${gameInfo.teams} and ${filledSlots} players on the last team out of ${gameInfo.players}.`;
 
                 if (
                   teams.length === gameInfo.teams &&
