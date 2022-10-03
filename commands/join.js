@@ -119,7 +119,7 @@ module.exports = {
 
                   startGame(game, gameInfo.structure, message.guild);
                   await query(
-                    'UPDATE games SET status = "ongoing" WHERE id = $1',
+                    'UPDATE games SET status = `ongoing` WHERE id = $1',
                     [game]
                   );
 
