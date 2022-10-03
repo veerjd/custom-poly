@@ -24,7 +24,7 @@ module.exports = {
       const game = args[1];
       const gameInfo = (
         await query(
-          'SELECT structure, status, teams, players FROM games WHERE id = $1',
+          'SELECT structure, status, host, teams, players FROM games WHERE id = $1',
           [game]
         )
       ).rows[0];
@@ -106,22 +106,17 @@ module.exports = {
                 }
 
                 filledSlots = lastTeam.player_ids.length;
+                returnMsg += `\nThe last team has ${filledSlots} people.`;
 
                 if (
-                  teams.length === gameInfo.teams &&
-                  gameInfo.players === filledSlots
+                  teams.length === gameInfo.players &&
+                  gameInfo.teams === filledSlots
                 ) {
-                  const gameInfo2 = (
-                    await query(
-                      'SELECT structure, host FROM games WHERE id = $1',
-                      [game]
-                    )
-                  ).rows[0];
-                  const gameHostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo2.host])).rows[0].user_id;
+                  const gameHostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo.host])).rows[0].user_id;
 
-                  startGame(game, gameInfo2.structure, message.guild);
+                  startGame(game, gameInfo.structure, message.guild);
                   await query(
-                    'UPDATE games SET status = `ongoing` WHERE id = $1',
+                    'UPDATE games SET status = "ongoing" WHERE id = $1',
                     [game]
                   );
 
