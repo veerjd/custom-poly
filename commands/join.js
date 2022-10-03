@@ -56,7 +56,7 @@ module.exports = {
           } else {
             const players = await getPlayerIds(game);
             if (!players.includes(playerId)) {
-              const teams = (
+              let teams = (
                 await query('SELECT * FROM teams WHERE game_id = $1', [game])
               ).rows;
               const newTeamId = await nextTeamId();
@@ -90,6 +90,9 @@ module.exports = {
                     );
                   }
                   lastTeam = (await query('SELECT * FROM teams WHERE id = $1', [newTeamId])).rows[0];
+                  teams = (
+                    await query('SELECT * FROM teams WHERE game_id = $1', [game])
+                  ).rows;
                 } else {
                   lastTeam.player_ids.push(playerId);
                   await query('UPDATE teams SET player_ids = $1 WHERE id = $2', [
