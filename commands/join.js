@@ -106,11 +106,11 @@ module.exports = {
                 }
 
                 filledSlots = lastTeam.player_ids.length;
-                returnMsg += `\nThe last team has ${filledSlots} people.`;
+                returnMsg += `\nThe last team has ${filledSlots} people. There are ${teams.length} teams out of ${gameInfo.teams} and ${filledSlots} players on the last team out of ${gameInfo.players}.`;
 
                 if (
-                  teams.length === gameInfo.players &&
-                  gameInfo.teams === filledSlots
+                  teams.length === gameInfo.teams &&
+                  gameInfo.players === filledSlots
                 ) {
                   const gameHostId = (await query('SELECT user_id FROM players WHERE id = $1', [gameInfo.host])).rows[0].user_id;
 
