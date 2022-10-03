@@ -1,6 +1,6 @@
 /* Set up game channels when a game is started. */
 const { query } = require('../db');
-const { Permissions } = require('discord.js');
+const { PermissionFlagsBits } = require('discord.js');
 const { getPlayerIds, getUserIds } = require('./get-players');
 const { createChannel } = require('./create-channel');
 const { sendDm } = require('../index');
@@ -18,12 +18,12 @@ module.exports = {
     userIds.forEach((playerId) => {
       playerPerms.push({
         id: playerId,
-        allow: [Permissions.FLAGS.VIEW_CHANNEL],
+        allow: [PermissionFlagsBits.ViewChannel],
       });
     });
     playerPerms.push({
       id: guild.id,
-      deny: [Permissions.FLAGS.VIEW_CHANNEL],
+      deny: [PermissionFlagsBits.ViewChannel],
     });
 
     let gameChannel;
@@ -51,12 +51,12 @@ module.exports = {
           ).rows[0].user_id;
           teamPerms.push({
             id: userId,
-            allow: [Permissions.FLAGS.VIEW_CHANNEL],
+            allow: [PermissionFlagsBits.ViewChannel],
           });
         });
         teamPerms.push({
           id: guild.id,
-          deny: [Permissions.FLAGS.VIEW_CHANNEL],
+          deny: [PermissionFlagsBits.ViewChannel],
         });
         const teamChannel = createChannel(
           guild,
@@ -117,12 +117,12 @@ module.exports = {
       wolves.forEach((userId) => {
         wolvesPerms.push({
           id: userId,
-          allow: [Permissions.FLAGS.VIEW_CHANNEL],
+          allow: [PermissionFlagsBits.ViewChannel],
         });
       });
       wolvesPerms.push({
         id: guild.id,
-        deny: [Permissions.FLAGS.VIEW_CHANNEL],
+        deny: [PermissionFlagsBits.ViewChannel],
       });
       createChannel(
         guild,

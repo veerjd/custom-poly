@@ -1,8 +1,8 @@
 module.exports = {
   createChannel: (guild, channelName, categoryName, channelPerms) => {
     return guild.channels
-      .create(channelName, {
-        type: 'GUILD_TEXT',
+      .create({
+        name: channelName,
         permissionOverwrites: channelPerms,
       })
       .then((channel) => {
@@ -14,6 +14,7 @@ module.exports = {
           return;
         }
         channel.setParent(cat.id);
-      });
+      })
+      .catch(console.error);
   },
 };
