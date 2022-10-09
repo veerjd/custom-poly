@@ -24,7 +24,7 @@ module.exports = {
         await query('SELECT id FROM players WHERE user_id = $1', [userId])
       ).rows;
       if (existingUser.length === 0) {
-        const userGameName = args[1];
+        const userGameName = args.slice(1, args.length).join(' ');
         if (userGameName || mod) {
           let userName = message.member.nickname;
           if (!userName) {
